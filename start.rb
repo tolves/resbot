@@ -6,6 +6,12 @@ require 'uri'
 require 'openssl'
 OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 token = '344686538:AAGWv2ANcHGZhoZDvubC5xMF2l9bOdJnh9k'
+require 'mysql2'
+client = Mysql2::Client.new(:host => "localhost", :username => "root",:password=>"123456",:database=>"salt_res")
+results = client.query("select * from users");
+results.each do |hash|
+	bot.logger.info(hash.map { |k,v| "#{k} = #{v}" }.join(", "))
+end
 #incompleteLabels = ['5666779e19ad3a5dc26426a5','57287baf9148b133b928f6da','56d4fd5d152c3f92fd3a75c7','574c64565b9b3323fb39a5bd']
 
 # begin
