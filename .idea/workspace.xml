@@ -27,8 +27,8 @@
       <file leaf-file-name="start.rb" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/start.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5430017">
-              <caret line="25" column="41" selection-start-line="25" selection-start-column="41" selection-end-line="25" selection-end-column="41" />
+            <state vertical-scroll-proportion="0.3406408">
+              <caret line="26" column="78" selection-start-line="26" selection-start-column="78" selection-end-line="26" selection-end-column="78" />
               <folding />
             </state>
           </provider>
@@ -50,6 +50,9 @@
     <option name="PUSH_TAGS">
       <GitPushTagMode />
     </option>
+    <push-targets>
+      <push-target-info repo="$PROJECT_DIR$" source="master" target-remote="origin" target-branch="get_me_test" />
+    </push-targets>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -278,7 +281,13 @@
       <option name="project" value="LOCAL" />
       <updated>1486969294666</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="get me 测试成功">
+      <created>1486971828762</created>
+      <option name="number" value="00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1486971828762</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TodoView">
@@ -324,7 +333,8 @@
     <MESSAGE value="test commit from rubymine" />
     <MESSAGE value="能发出信的bot，openssl因为windows关系，需要关掉" />
     <MESSAGE value="添加mysql2" />
-    <option name="LAST_COMMIT_MESSAGE" value="添加mysql2" />
+    <MESSAGE value="get me 测试成功" />
+    <option name="LAST_COMMIT_MESSAGE" value="get me 测试成功" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -333,8 +343,8 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/start.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5430017">
-          <caret line="25" column="41" selection-start-line="25" selection-start-column="41" selection-end-line="25" selection-end-column="41" />
+        <state vertical-scroll-proportion="0.3406408">
+          <caret line="26" column="78" selection-start-line="26" selection-start-column="78" selection-end-line="26" selection-end-column="78" />
           <folding />
         </state>
       </provider>
