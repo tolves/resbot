@@ -21,10 +21,10 @@ markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: keyboar
 Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 	bot.logger.info('Bot has been started')
 	bot.listen do |message|
-		if(!message.respond_to? 'inline_message_id')
+		bot.logger.info(message.class == Telegram::Bot::Types::Message)
+		if message.class == Telegram::Bot::Types::Message
 			bot.api.send_message chat_id: message.chat.id, text: 'Foo', reply_markup: markup
-			bot.logger.info(message.chat.id)
-		else
+		elsif message.class == Telegram::Bot::Types::CallbackQuery
 			bot.logger.info(message.id)
 			bot.api.answer_callback_query callback_query_id:message.id , text: 'inline'
 		end
