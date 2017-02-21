@@ -1,14 +1,14 @@
 require 'mysql2'
 class Db
-	@@mysql_host = 'localhost'
-	@@mysql_user = 'root'
-	@@mysql_passwd = '123456'
-	@@mysql_database = 'salt_res'
 	def connect
-		client=Mysql2::Client.new(:host => @@mysql_host,
-		                          :username => @@mysql_user,
-		                          :password => @@mysql_passwd,
-		                          :database => @@mysql_database,
+		mysql_host = 'localhost'
+		mysql_user = 'root'
+		mysql_passwd = '123456'
+		mysql_database = 'salt_res'
+		client=Mysql2::Client.new(:host => mysql_host,
+		                          :username => mysql_user,
+		                          :password => mysql_passwd,
+		                          :database => mysql_database,
 		                          :encoding => 'utf8')
 	end
 end
