@@ -18,9 +18,9 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 				next if message.date < (Time.now - 120).to_i
 				case message.text
 					when '/start'
-						bind message,bot
-					when '/approve'
-						approve_waiting message,bot
+						next if bind message,bot
+					when /\/approve ./
+						approve_for_waiting message,bot
 					else
 						if !message.reply_to_message.nil?
 							case message.reply_to_message.text
@@ -34,8 +34,12 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 				end
 			when 'Telegram::Bot::Types::CallbackQuery'
 				# bot.logger.info(message.message.date)
-				# next if message.message.date < (Time.now - 120).to_i
-				# bot.logger.info(message.id)
+				next if message.message.date < (Time.now - 120).to_i
+				case message.data
+					when /waiting_./
+						bot.logger.info(message.data)
+						judgement_waiting message,bot
+				end
 				# bot.api.answer_callback_query callback_query_id:message.id , text: 'inline'
 			else
 				# bot.logger.info(message.class)
@@ -43,8 +47,6 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 		end
 
 
-		# bot.api.send_message chat_id: message.chat.id, text: message.type
-		# bot.logger.info(message.callbackquery.inline_message_id)
 		# begin
 			#next if message.date < (Time.now - 120).to_i
 			#case message.text
