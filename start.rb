@@ -19,55 +19,43 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 				case message.text
 					when '/start'
 						next if bind message,bot
-					when /\/approve ./
-						approve_for_waiting message,bot
+					when '/start@saltres_bot'
+						next if bind message,bot
+					when '/go'
+						next if overview message,bot
+					when '/go@saltres_bot'
+						next if overview message,bot
 					else
 						if !message.reply_to_message.nil?
 							case message.reply_to_message.text
 								when '请认真输入你的游戏id，输错了就打pp'
-										next if resiger message,bot
+									next if resiger message,bot
+								when '请输入需要修改权限特工的ingress id：'
+									next if check_modified_agent message,bot
 								else
 									bot.logger.info(message.reply_to_message)
 							end
 						end
-
 				end
 			when 'Telegram::Bot::Types::CallbackQuery'
-				# bot.logger.info(message.message.date)
 				next if message.message.date < (Time.now - 120).to_i
 				case message.data
-					when /waiting_./
-						bot.logger.info(message.data)
+					when 'overview_back'
+						overview message,bot if message.class == Telegram::Bot::Types::Message
+						overview message.message,bot if message.class == Telegram::Bot::Types::CallbackQuery
+					when 'overview_review_agent'
+						review_waiting message,bot
+					when 'overview_get_me'
+						get_me message,bot
+					when 'overview_modify_agent_auth'
+						modify_agent_auth message,bot
+					when /review_waiting_./
+						get_waiting_detail message,bot
+					when /review_agent_./
 						judgement_waiting message,bot
 				end
-				# bot.api.answer_callback_query callback_query_id:message.id , text: 'inline'
 			else
-				# bot.logger.info(message.class)
-				# bot.api.send_message chat_id: message.chat.id, text: 'Foo', reply_markup: markup
+
 		end
-
-
-		# begin
-			#next if message.date < (Time.now - 120).to_i
-			#case message.text
-			#	when /\/q ./
-				# bot.api.send_message(bot.api.methods)
-				# bot.logger.info(bot.api.get_me)
-				# bot.api.inline_query(id:message.chat.id,from:message.from,query:'123',offset:'123123')
-				# bot.api.send_message chat_id:message.chat.id, text: 'Foo', reply_markup: markup
-
-
-				# bot.api.get_user_profile_photos(user_id:message.from.id,limit:3)['result']['photos'].each do |photo|
-					# bot.logger.info(photo)
-					# bot.api.send_photo(chat_id: message.chat.id, photo:photo[0]['file_id'])
-					# bot.logger.info(photo[0]['file_id'])
-				# end
-					# bot.api.send_photo(chat_id: message.chat.id, photo:items.file_id)
-			# }
-			#end
-		# rescue
-		# 	sleep(70)
-		# 	retry
-		# end
 	end
 end
