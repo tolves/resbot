@@ -1,4 +1,3 @@
-
 # encoding: utf-8
 require 'telegram/bot'
 require 'json'
@@ -7,8 +6,7 @@ require 'openssl'
 OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 token = '344686538:AAGWv2ANcHGZhoZDvubC5xMF2l9bOdJnh9k'
 
-require_relative  'db_connect'
-require_relative  'functions'
+require_relative  'relatives'
 
 Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 	bot.logger.info('Bot has been started')
@@ -44,6 +42,8 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 			when 'Telegram::Bot::Types::CallbackQuery'
 				next if message.message.date < (Time.now - 120).to_i
 				case message.data
+					when 'back_overview'
+						next if overview message,bot
 					when 'overview_review_agent'
 						review_waiting message,bot
 					when 'overview_get_me'
@@ -54,6 +54,8 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 						create_activity message,bot
 					when 'overview_available_activity'
 						view_availalbe_activity message,bot
+					when 'overview_available_activity_created_byme'
+						view_actitivy_created_byme message,bot
 					when /review_waiting_./
 						get_waiting_detail message,bot
 					when /review_agent_./
