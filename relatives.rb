@@ -22,7 +22,10 @@ require_relative  'func'
 query_created_byme = "ay.id,ay.name,ay.detail,ay.security,secu.security_name,ay.created_on,ay.updated_on,ay.status,ad.id AS adid,ad.duty_name"
 query_created_byme_leftjoin = "LEFT JOIN activity_users AS au ON ay.id=au.activity_id LEFT JOIN activity_duty AS ad ON au.duty=ad.id LEFT JOIN security AS secu ON ay.security=secu.id"
 @query_activity_info_created_byme_by_telegram_id = @client.prepare("SELECT #{query_created_byme} FROM activity AS ay #{query_created_byme_leftjoin} WHERE au.duty=1 AND au.telegram_id=? ORDER BY ay.updated_on")
+@query_activity_info_created_byme_by_activity_id = @client.prepare("SELECT #{query_created_byme} FROM activity AS ay #{query_created_byme_leftjoin} WHERE au.duty=1 AND ay.id=? ORDER BY ay.updated_on")
 @query_activity_created_byme_by_telegram_id = @client.prepare("SELECT ay.id,ay.name,ay.status FROM activity AS ay LEFT JOIN activity_users AS au ON ay.id=au.activity_id WHERE au.duty=1 AND au.telegram_id=? ORDER BY ay.updated_on")
+@query_activity_joined_users_by_activity_id = @client.prepare("SELECT *,us.agent_id,us.telegram_username,us.authority,ad.duty_name FROM activity_users AS au LEFT JOIN users AS us ON au.telegram_id=us.telegram_id LEFT JOIN activity_duty AS ad ON au.duty=ad.id LEFT JOIN  authority_name AS an ON us.authority=an.id WHERE au.activity_id=? AND ad.id>2")
+@query_activity_organizer_users_by_activity_id = @client.prepare("SELECT *,us.agent_id,us.telegram_username,us.authority,ad.duty_name FROM activity_users AS au LEFT JOIN users AS us ON au.telegram_id=us.telegram_id LEFT JOIN activity_duty AS ad ON au.duty=ad.id LEFT JOIN  authority_name AS an ON us.authority=an.id WHERE au.activity_id=? AND ad.id<3")
 
 
 
@@ -30,8 +33,13 @@ query_created_byme_leftjoin = "LEFT JOIN activity_users AS au ON ay.id=au.activi
 def overview message,bot
 	agent_exist = @query_agent_exist_statement.execute(message.from.id)
 	if agent_exist.size == 0
-		bot.api.send_message chat_id: message.from.id, text: '你尚未注册魔懒懒系统，输入 /start 开始注册'
-		return false
+		begin
+			bot.api.send_message chat_id: message.from.id, text: '你尚未注册魔懒懒系统，输入 /start 开始注册'
+			return false
+		rescue
+			bot.api.send_message chat_id: message.chat.id, text: '你尚未注册魔懒懒系统，请先小窗bot /start 开始，要不然收不到信息的哟'
+		end
+
 	end
 
 	agent_auth = @query_agent_auth_statement_by_telegram_id.execute(message.from.id).first

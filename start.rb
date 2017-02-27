@@ -44,6 +44,7 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 				case message.data
 					when 'back_overview'
 						next if overview message,bot
+
 					when 'overview_review_agent'
 						review_waiting message,bot
 					when 'overview_get_me'
@@ -53,9 +54,9 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 					when 'overview_create_activity'
 						create_activity message,bot
 					when 'overview_available_activity'
-						view_availalbe_activity message,bot
+						view_availalbe_activities message,bot
 					when 'overview_available_activity_created_byme'
-						view_actitivy_created_byme message,bot
+						view_activities_created_byme message,bot
 					when /review_waiting_./
 						get_waiting_detail message,bot
 					when /review_agent_./
@@ -64,6 +65,9 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 						amend_agent message,bot
 					when /security_level_./
 						create_activity_security_level message,bot
+					when /valid_activities_created_byme_./
+						view_activity_created_byme message,bot
+
 				end
 			else
 

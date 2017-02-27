@@ -59,7 +59,7 @@ def create_activity_security_level message,bot
 end
 
 #查看当前所有活跃的活动
-def view_availalbe_activity message,bot
+def view_availalbe_activities message,bot
 	availalbe_activities = @client.query("SELECT * FROM activity AS ay LEFT JOIN security AS secu ON ay.security=secu.id where status=1")
 	acty_kb_a = Array.new
 	availalbe_activities.each do |activity|
@@ -71,17 +71,68 @@ def view_availalbe_activity message,bot
 	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'活跃活动列表：', reply_markup: acty_makeup
 end
 
-
-def view_actitivy_created_byme message,bot
+#查看我创建的活动
+def view_activities_created_byme message,bot
 	activities = @query_activity_created_byme_by_telegram_id.execute message.from.id
-	acty_creabyme_kb = Array.new
+	acty_creabyme_kb_a = Array.new
 
 	activities.each do |activity|
 		# bot.logger.info()
 		status = activity['status'] == 0?'已存档':'活动'
-		acty_creabyme_kb << Telegram::Bot::Types::InlineKeyboardButton.new(text: "#{activity['name']} - #{status}", callback_data: "valid_activities_created_byme_#{activity['id']}")
+		acty_creabyme_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "#{activity['name']} - #{status}", callback_data: "valid_activities_created_byme_#{activity['id']}")
 	end
+	acty_creabyme_kb = Array.new
+	acty_creabyme_kb_a.each_slice(2){|kb| acty_creabyme_kb<<kb}
 	acty_creabyme_kb << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")
 	acty_creabyme_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: acty_creabyme_kb)
 	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'我创建的活动：', reply_markup: acty_creabyme_makeup
+end
+
+
+def view_activity_created_byme message,bot
+	activity_id = message.data.sub(/valid_activities_created_byme_/ , "")
+	bot.logger.info(activity_id)
+	activity_detail = @query_activity_info_created_byme_by_activity_id.execute(activity_id)
+	activity_joined_users = @query_activity_joined_users_by_activity_id.execute(activity_id)
+	activity_organizer = @query_activity_organizer_users_by_activity_id.execute(activity_id)
+
+	ac_kb,organizer,joined_users,organizer_text,joined_users_text = Array.new,Array.new,Array.new,'',''
+	activity_organizer.each do |user|
+		organizer << [:username => user['telegram_username'],
+		              :agent_id => user['agent_id'],
+		              :duty => user['duty_name'],
+		              :authority => user['name']]
+		organizer_text << "[#{user['agent_id']}](https://t.me/#{user['telegram_username']}) - #{user['duty_name']}\n"
+	end
+
+	activity_joined_users.each do |user|
+		joined_users << [:username => user['telegram_username'],
+		                 :agent_id => user['agent_id'],
+		                 :duty => user['duty_name'],
+		                 :authority => user['name']]
+		joined_users_text << "[#{user['agent_id']}](https://t.me/#{user['telegram_username']}) - #{user['duty_name']}\n"
+	end
+
+	activity_detail = activity_detail.first
+	detail_text = "活动名称：#{activity_detail['name']}\n"
+	detail_text << "活动详情：#{activity_detail['name']}\n"
+	detail_text << "活动组织人员：#{activity_detail['name']}\n"
+	detail_text << "组织特工：\n"
+	detail_text << organizer_text
+	detail_text << "参与活动特工：\n"
+	detail_text << joined_users_text
+	ac_kb = [
+		[
+				Telegram::Bot::Types::InlineKeyboardButton.new(text: "增加参与特工", callback_data: "activity_addagent_created_byme_#{activity_id}"),
+				Telegram::Bot::Types::InlineKeyboardButton.new(text: "修改特工活动权限", callback_data: "activity_modagent_created_byme_#{activity_id}")
+		],
+    [
+				Telegram::Bot::Types::InlineKeyboardButton.new(text: "删除特工", callback_data: "activity_delagent_created_byme_#{activity_id}"),
+				Telegram::Bot::Types::InlineKeyboardButton.new(text: "活动广播", callback_data: "activity_noticeagent_created_byme_#{activity_id}")
+		],
+		[
+				Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "overview_available_activity_created_byme"),          Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")
+		]]
+	ac_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: ac_kb)
+	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: detail_text , parse_mode: 'Markdown', disable_web_page_preview:true , reply_markup: ac_kb_makeup
 end
