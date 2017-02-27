@@ -34,6 +34,9 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 									next if create_activity_name message,bot
 								when '成功新建活动，请继续输入活动详情：'
 									next if create_activity_detail message,bot
+								when '请输入特工游戏id，多人输入以","分割：'
+									next if addagent_activity message,bot
+
 								else
 									bot.logger.info(message.reply_to_message)
 							end
@@ -67,6 +70,14 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 						create_activity_security_level message,bot
 					when /valid_activities_created_byme_./
 						view_activity_created_byme message,bot
+					when /activity_addagent_created_byme_./
+						activity_addagent_created_byme message,bot
+					when /activity_modagent_created_byme_./
+						activity_modagent_created_byme message,bot
+					when /activity_delagent_created_byme_./
+						activity_delagent_created_byme message,bot
+					when /activity_noticeagent_created_byme_./
+						activity_noticeagent_created_byme message,bot
 
 				end
 			else

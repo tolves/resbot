@@ -10,7 +10,7 @@ require_relative  'func'
 @force_reply = Telegram::Bot::Types::ForceReply.new(force_reply: true, selective: true)
 
 @query_agent_exist_statement = @client.prepare("SELECT agent_id,authority FROM users WHERE telegram_id = ?")#{message.from.id}
-@query_ingressid_exist_statement = @client.prepare("SELECT agent_id FROM users WHERE agent_id = ?")
+@query_ingressid_exist_statement = @client.prepare("SELECT * FROM users WHERE agent_id = ?")
 @query_agent_admin_statement = @client.prepare("SELECT agent_id FROM users WHERE telegram_id = ? AND authority in (1,2)")
 @query_waiting_agent_statement = @client.prepare("SELECT agent_id,telegram_username FROM users WHERE authority = '6' ORDER BY 'created_on' LIMIT ?,7")
 @query_agent_auth_statement_by_agent_id = @client.prepare("SELECT * FROM users AS us LEFT JOIN authority_name AS an ON us.authority=an.id  WHERE us.agent_id=?")
@@ -26,6 +26,8 @@ query_created_byme_leftjoin = "LEFT JOIN activity_users AS au ON ay.id=au.activi
 @query_activity_created_byme_by_telegram_id = @client.prepare("SELECT ay.id,ay.name,ay.status FROM activity AS ay LEFT JOIN activity_users AS au ON ay.id=au.activity_id WHERE au.duty=1 AND au.telegram_id=? ORDER BY ay.updated_on")
 @query_activity_joined_users_by_activity_id = @client.prepare("SELECT *,us.agent_id,us.telegram_username,us.authority,ad.duty_name FROM activity_users AS au LEFT JOIN users AS us ON au.telegram_id=us.telegram_id LEFT JOIN activity_duty AS ad ON au.duty=ad.id LEFT JOIN  authority_name AS an ON us.authority=an.id WHERE au.activity_id=? AND ad.id>2")
 @query_activity_organizer_users_by_activity_id = @client.prepare("SELECT *,us.agent_id,us.telegram_username,us.authority,ad.duty_name FROM activity_users AS au LEFT JOIN users AS us ON au.telegram_id=us.telegram_id LEFT JOIN activity_duty AS ad ON au.duty=ad.id LEFT JOIN  authority_name AS an ON us.authority=an.id WHERE au.activity_id=? AND ad.id<3")
+@insert_addagent_activity = @client.prepare("INSERT INTO activity_users (activity_id,telegram_id,duty) VALUES (?,?,?)")
+@update_activity = @client.prepare("UPDATE activity SET updated_on=\"#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}\" WHERE id=?")
 
 
 

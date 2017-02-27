@@ -78,7 +78,7 @@ def view_activities_created_byme message,bot
 
 	activities.each do |activity|
 		# bot.logger.info()
-		status = activity['status'] == 0?'已存档':'活动'
+		status = activity['status'] == 0?'已存档':'活跃'
 		acty_creabyme_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "#{activity['name']} - #{status}", callback_data: "valid_activities_created_byme_#{activity['id']}")
 	end
 	acty_creabyme_kb = Array.new
@@ -91,7 +91,6 @@ end
 
 def view_activity_created_byme message,bot
 	activity_id = message.data.sub(/valid_activities_created_byme_/ , "")
-	bot.logger.info(activity_id)
 	activity_detail = @query_activity_info_created_byme_by_activity_id.execute(activity_id)
 	activity_joined_users = @query_activity_joined_users_by_activity_id.execute(activity_id)
 	activity_organizer = @query_activity_organizer_users_by_activity_id.execute(activity_id)
@@ -116,8 +115,7 @@ def view_activity_created_byme message,bot
 	activity_detail = activity_detail.first
 	detail_text = "活动名称：#{activity_detail['name']}\n"
 	detail_text << "活动详情：#{activity_detail['name']}\n"
-	detail_text << "活动组织人员：#{activity_detail['name']}\n"
-	detail_text << "组织特工：\n"
+	detail_text << "活动组织特工：\n"
 	detail_text << organizer_text
 	detail_text << "参与活动特工：\n"
 	detail_text << joined_users_text
@@ -135,4 +133,50 @@ def view_activity_created_byme message,bot
 		]]
 	ac_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: ac_kb)
 	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: detail_text , parse_mode: 'Markdown', disable_web_page_preview:true , reply_markup: ac_kb_makeup
+end
+
+
+def activity_addagent_created_byme message,bot
+	activity_id = message.data.sub(/activity_addagent_created_byme_/ , "")
+	@addagent = [activity_id,message.from.id]
+	bot.api.send_message chat_id: message.from.id, text: '请输入特工游戏id，多人输入以","分割：', reply_markup:@force_reply
+end
+
+
+def addagent_activity message,bot
+	if @addagent.nil?
+		bot.api.send_message chat_id: message.from.id, text: '发生错误，输入 /go 返回大厅'
+		return false
+	end
+	if @addagent[0].nil?
+		bot.api.send_message chat_id: message.from.id, text: '发生错误，输入 /go 返回大厅'
+		return false
+	end
+	bot.logger.info(@addagent)
+	if @addagent[1] != message.from.id
+		bot.api.send_message chat_id: message.from.id, text: '发生错误，输入 /go 返回大厅'
+		return false
+	end
+
+	users_agentid = message.text.strip.split(',')
+	users_agentid.each do |agent_id|
+		agent_detail = @query_ingressid_exist_statement.execute agent_id
+		if agent_detail.size == 0
+			bot.api.send_message chat_id: message.from.id, text: "特工 #{agent_id} 尚未注册本系统，请提醒注册"
+			next
+		end
+		agent_detail = agent_detail.first
+		begin
+			@insert_addagent_activity.execute @addagent[0],agent_detail['telegram_id'],5
+			@update_activity.execute @addagent[0]
+			bot.api.send_message chat_id: message.from.id, text: "成功添加特工 #{agent_id} 至活动"
+		rescue
+			bot.api.send_message chat_id: message.from.id, text: "发生错误，联系豆腐丝 @tolves 修bug"
+			next
+		end
+	end
+	ac_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "valid_activities_created_byme_#{@addagent[0]}"),
+	          Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")]]
+	ac_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: ac_kb)
+	bot.api.send_message chat_id: message.from.id , text: '用户添加完毕', reply_markup: ac_kb_makeup
 end
