@@ -36,6 +36,8 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 									next if create_activity_detail message,bot
 								when '请输入特工游戏id，多人输入以","分割：'
 									next if addagent_activity message,bot
+								when '请输入广播给活动内除组织者外所有成员的信息：'
+									next if notice_allagent_inacty message,bot
 
 								else
 									bot.logger.info(message.reply_to_message)
@@ -73,11 +75,17 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 					when /activity_addagent_created_byme_./
 						activity_addagent_created_byme message,bot
 					when /activity_modagent_created_byme_./
-						activity_modagent_created_byme message,bot
+						activity_agent_list message,bot,'mod'
 					when /activity_delagent_created_byme_./
-						activity_delagent_created_byme message,bot
+						activity_agent_list message,bot,'del'
 					when /activity_noticeagent_created_byme_./
-						activity_noticeagent_created_byme message,bot
+						noticeagent_activity message,bot
+					when /agent_activity_mod_.+_.+_.+/
+						modagent_activity message,bot
+					when /agent_activity_del_.+_.+_.+/
+						delagent_activity message,bot
+					when /duty_level_.*_.*_.*/
+						modagent_activity_duty message,bot
 
 				end
 			else

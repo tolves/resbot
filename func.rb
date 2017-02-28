@@ -15,3 +15,15 @@ def security_level_keyboard
 	secu_kb_array.each_slice(4){|kb| secu_kb<<kb}
 	secu_kb
 end
+
+#职责表
+def duty_level_keyboard
+	duty_kb_array =Array.new
+	all_duties = @client.query("SELECT * FROM activity_duty")
+	all_duties.each do |duty|
+		duty_kb_array << Telegram::Bot::Types::InlineKeyboardButton.new(text: duty['duty_name'], callback_data: "duty_level_#{duty['id']}")
+	end
+	duty_kb = Array.new
+	duty_kb_array.each_slice(4){|kb| duty_kb<<kb}
+	duty_kb
+end
