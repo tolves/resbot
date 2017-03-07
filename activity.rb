@@ -57,55 +57,66 @@ def create_activity_security_level message,bot
 	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: "成功设置活动密级，点击 /go 返回大厅"
 end
 
-#查看当前所有活跃的活动
-def view_availalbe_activities message,bot
-	availalbe_activities = @client.query("SELECT * FROM activity AS ay LEFT JOIN security AS secu ON ay.security=secu.id where status=1")
-	acty_kb_a = Array.new
-	availalbe_activities.each do |activity|
-		acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: activity['name'], callback_data: "valid_activity_#{activity['id']}")
+#查看活动,根据标签选择不同的query
+def view_activities message,bot
+	action = message.data.split('_',3)[2]
+	if action=='created'
+		activites_statement = @client.prepare("SELECT ay.id,ay.name,ay.status FROM activity AS ay LEFT JOIN activity_users AS au ON ay.id=au.activity_id WHERE au.duty=1 AND au.telegram_id=? ORDER BY ay.updated_on")
+		begin
+			activites = activites_statement.execute message.from.id
+		rescue
+			raise_errormessage
+			retry
+		end
+	elsif action == 'joined'
+		activites_statement = @client.prepare("SELECT ay.id,ay.name,ay.status FROM activity AS ay LEFT JOIN activity_users AS au ON ay.id=au.activity_id WHERE au.duty!=1 AND au.telegram_id=? AND ay.status!=0 ORDER BY ay.updated_on")
+		begin
+			activites = activites_statement.execute message.from.id
+		rescue
+			raise_errormessage
+			retry
+		end
 	end
+	if activites.size == 0
+		bot.api.answer_callback_query callback_query_id:message.id , text: '没有任何活动'
+		return false
+	end
+	acty_kb_a = Array.new
+	activites.each do |activity|
+
+		button_text = activity['name']
+		if action=='created'
+			status = activity['status'] == 0?'已存档':'活跃'
+			button_text = "#{activity['name']} - #{status}"
+		end
+
+		acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: button_text, callback_data: "view_activity_#{activity['id']}_#{action}")
+	end
+	acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")
 	acty_kb = Array.new
 	acty_kb_a.each_slice(2){|kb| acty_kb<<kb}
 	acty_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: acty_kb)
-	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'活跃活动列表：', reply_markup: acty_makeup
-end
-
-#查看我创建的活动
-def view_activities_created_byme message,bot
-	activities = @query_activity_created_byme_by_telegram_id.execute message.from.id
-	acty_creabyme_kb = Array.new
-
-	activities.each do |activity|
-		status = activity['status'] == 0?'已存档':'活跃'
-		acty_creabyme_kb << Telegram::Bot::Types::InlineKeyboardButton.new(text: "#{activity['name']} - #{status}", callback_data: "valid_activities_created_byme_#{activity['id']}")
-	end
-	acty_creabyme_kb << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")
-	acty_creabyme_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: acty_creabyme_kb)
-	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'我创建的活动：', reply_markup: acty_creabyme_makeup
+	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'活动列表：', reply_markup: acty_makeup
 end
 
 #查看活动详情
-def view_activity_created_byme message,bot
-	activity_id = message.data.sub(/valid_activities_created_byme_/ , "")
-	activity_detail = @query_activity_info_created_byme_by_activity_id.execute(activity_id)
+def view_activity message,bot
+	activity_id,action = message.data.split('_',4)[2,3]
+	activity_detail = @query_activity_info.execute(activity_id)
 	activity_joined_users = @query_activity_joined_users_by_activity_id.execute(activity_id)
 	activity_organizer = @query_activity_organizer_users_by_activity_id.execute(activity_id)
-
-	ac_kb,organizer,joined_users,organizer_text,joined_users_text = Array.new,Array.new,Array.new,'',''
+	current_user = @query_activity_duty_by_activity_id.execute(activity_id,message.from.id).first
+	organizer_text,joined_users_text = '',''
 	activity_organizer.each do |user|
-		organizer << [:username => user['telegram_username'],
-		              :agent_id => user['agent_id'],
-		              :duty => user['duty_name'],
-		              :authority => user['name']]
 		organizer_text << "[#{user['agent_id']}](https://t.me/#{user['telegram_username']}) - #{user['duty_name']}\n"
 	end
 
 	activity_joined_users.each do |user|
-		joined_users << [:username => user['telegram_username'],
-		                 :agent_id => user['agent_id'],
-		                 :duty => user['duty_name'],
-		                 :authority => user['name']]
-		joined_users_text << "[#{user['agent_id']}](https://t.me/#{user['telegram_username']}) - #{user['duty_name']}\n"
+		show_duty =  " - #{user['duty_name']}\n"
+		if current_user['adid'] >= 3 #3为管理普通分界线
+			show_duty =  "\n"
+		end
+		joined_users_text << "[#{user['agent_id']}](https://t.me/#{user['telegram_username']})#{show_duty}"
 	end
 
 	activity_detail = activity_detail.first
@@ -115,31 +126,35 @@ def view_activity_created_byme message,bot
 	detail_text << organizer_text
 	detail_text << "参与活动特工：\n"
 	detail_text << joined_users_text
-	ac_kb = [
-		[
-				Telegram::Bot::Types::InlineKeyboardButton.new(text: "增加参与特工", callback_data: "activity_addagent_created_byme_#{activity_id}"),
-				Telegram::Bot::Types::InlineKeyboardButton.new(text: "修改特工活动权限", callback_data: "activity_modagent_created_byme_#{activity_id}")
-		],
-    [
-				Telegram::Bot::Types::InlineKeyboardButton.new(text: "删除特工", callback_data: "activity_delagent_created_byme_#{activity_id}"),
-				Telegram::Bot::Types::InlineKeyboardButton.new(text: "活动广播", callback_data: "activity_noticeagent_created_byme_#{activity_id}")
-		],
-		[
-				Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "overview_available_activity_created_byme"),          Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")
-		]]
-	ac_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: ac_kb)
+
+	acty_kb_a =Array.new
+
+	if current_user['adid'] <= 2
+		acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "增加参与特工", callback_data: "activity_addagent_#{activity_id}")
+		acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "修改特工活动权限", callback_data: "activity_modagent_#{activity_id}")
+		acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "删除特工", callback_data: "activity_delagent_#{activity_id}")
+		acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "活动广播", callback_data: "activity_noticeagent_#{activity_id}")
+	end
+	# 需要每一级加上action标签。很烦，所以注释掉了
+	# acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "overview_activities_#{action}")
+	acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")
+
+	acty_kb = Array.new
+	acty_kb_a.each_slice(2){|kb| acty_kb<<kb}
+
+	ac_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: acty_kb)
 	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: detail_text , parse_mode: 'Markdown', disable_web_page_preview:true , reply_markup: ac_kb_makeup
 end
 
 #向活动添加人
-def activity_addagent_created_byme message,bot
-	activity_id = message.data.sub(/activity_addagent_created_byme_/ , "")
+def activity_addagent message,bot
+	activity_id = message.data.sub(/activity_addagent_/ , "")
 	@addagent = [activity_id,message.from.id]
 	bot.api.send_message chat_id: message.from.id, text: '请输入特工游戏id，多人输入以","分割：', reply_markup:@force_reply
 end
 
 #正式进行添加，会判断是否使用旧的message
-def addagent_activity message,bot
+def addagent_into_activity message,bot
 	if @addagent.nil?
 		bot.api.send_message chat_id: message.from.id, text: '发生错误，输入 /go 返回大厅'
 		return false
@@ -163,22 +178,23 @@ def addagent_activity message,bot
 		agent_detail = agent_detail.first
 		begin
 			@insert_addagent_activity.execute @addagent[0],agent_detail['telegram_id'],5
-			@update_activity.execute @addagent[0]
 			bot.api.send_message chat_id: message.from.id, text: "成功添加特工 #{agent_id} 至活动"
+			@update_activity.execute @addagent[0]
 		rescue
 			bot.api.send_message chat_id: message.from.id, text: "发生错误，联系豆腐丝 @tolves 修bug"
 			next
 		end
 	end
-	ac_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "valid_activities_created_byme_#{@addagent[0]}"),
+	ac_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "view_activity_#{@addagent[0]}"),
 	          Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")]]
 	ac_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: ac_kb)
+	@addagent = nil
 	bot.api.send_message chat_id: message.from.id , text: '特工添加完毕', reply_markup: ac_kb_makeup
 end
 
 #获得活动特工列表，然后进行操作，将修改、删除合二为一
 def activity_agent_list message,bot,active
-	activity_id = message.data.sub(/activity_(mod|del)agent_created_byme_/ , "")
+	activity_id = message.data.sub(/activity_(mod|del)agent_/ , "")
 	activity_joined_users = @query_activity_joined_users_by_activity_id.execute(activity_id)
 
 	duty = @query_activity_duty_by_activity_id.execute(activity_id,message.from.id).first
@@ -199,7 +215,7 @@ def activity_agent_list message,bot,active
 
 	acm_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "选择全部", callback_data: "agent_activity_#{active}_all") if active == 'notice'
 
-	acm_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "valid_activities_created_byme_#{activity_id}")
+	acm_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "view_activity_#{activity_id}")
 	acm_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")
 	acm_kb = Array.new
 	acm_kb_a.each_slice(2){|kb| acm_kb<<kb}
@@ -219,7 +235,7 @@ def modagent_activity message,bot
 		next if target['adid'] == duty['id']
 		duty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: duty['duty_name'], callback_data: "duty_level_#{activity_id}_#{telegram_id}_#{duty['id']}")
 	end
-	duty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "valid_activities_created_byme_#{activity_id}")
+	duty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "view_activity_#{activity_id}")
 	duty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")
 
 	duty_kb = Array.new
@@ -231,7 +247,7 @@ end
 
 def modagent_activity_duty message,bot
 	activity_id,telegram_id,duty_id = message.data.split('_',5)[2..4]
-	ac_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "valid_activities_created_byme_#{activity_id}"),
+	ac_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "view_activity_#{activity_id}"),
 	          Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")]]
 	ac_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: ac_kb)
 	begin
@@ -245,7 +261,7 @@ end
 
 def delagent_activity message,bot
 	activity_id,telegram_id,duty_id = message.data.split('_',6)[3..5]
-	ac_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "valid_activities_created_byme_#{activity_id}"),
+	ac_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "view_activity_#{activity_id}"),
 	          Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")]]
 	ac_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: ac_kb)
 	begin
@@ -257,14 +273,14 @@ def delagent_activity message,bot
 end
 
 
-def noticeagent_activity message,bot
-	activity_id = message.data.sub(/activity_noticeagent_created_byme_/ , "")
+def activity_noticeagent message,bot
+	activity_id = message.data.sub(/activity_noticeagent_/ , "")
 	@acid = activity_id
 	bot.api.send_message chat_id: message.from.id, text: '请输入广播给活动内除组织者外所有成员的信息：', reply_markup:@force_reply
 end
 
 
-def notice_allagent_inacty message,bot
+def notice_all_in_activity message,bot
 	if @acid.nil?
 		bot.api.send_message chat_id: message.from.id, text: '发生了奇怪的错误信息，点击 /go 返回大厅'
 		return false
@@ -273,11 +289,16 @@ def notice_allagent_inacty message,bot
 	users_id = ''
 	joined_users.each do |user|
 		begin
+			bot.logger.info(user)
 			bot.api.send_message chat_id: user['telegram_id'], text: message.text
 			users_id << "[#{user['agent_id']}](https://t.me/#{user['telegram_username']}) ,"
 		rescue
 			bot.api.send_message chat_id: message.from.id , text: "[#{user['agent_id']}](https://t.me/#{user['telegram_username']}) 发送失败" ,parse_mode: 'Markdown', disable_web_page_preview:true
 		end
 	end
-	bot.api.send_message chat_id: message.from.id , text: "向 #{users_id} 发送广播信息:\n #{message.text} \n成功" ,parse_mode: 'Markdown', disable_web_page_preview:true
+	ac_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "view_activity_#{@acid}"),
+	          Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")]]
+	ac_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: ac_kb)
+	bot.api.send_message chat_id: message.from.id , text: "向 #{users_id} 发送广播信息:\n #{message.text} \n成功" ,parse_mode: 'Markdown', disable_web_page_preview:true, reply_markup: ac_kb_makeup
 end
+
