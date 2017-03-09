@@ -6,8 +6,13 @@ def bind message,bot
 		bot.api.send_message chat_id: message.from.id, text: '你已经注册魔懒懒系统'
 		return false
 	end
-	bot.api.send_message chat_id: message.from.id, text: "你尚未注册魔懒懒系统 \n下面进入验证过程："
-	bot.api.send_message chat_id: message.from.id, text: '请认真输入你的游戏id，输错了就打pp', reply_markup:@force_reply
+	begin
+		bot.api.send_message chat_id: message.from.id, text: "你尚未注册魔懒懒系统 \n下面进入验证过程："
+		bot.api.send_message chat_id: message.from.id, text: '请认真输入你的游戏id，输错了就打pp', reply_markup:@force_reply
+	rescue
+		bot.api.send_message chat_id: message.chat.id, text: '你尚未注册魔懒懒系统，请先小窗bot /start 开始，要不然收不到信息的哟'
+		return false
+	end
 	@mark = 'mark'
 end
 
@@ -39,5 +44,5 @@ def resiger message,bot
 		return false
 	end
 
-	bot.api.send_message chat_id: message.from.id, text: "#{message.from.username}，你的信息已录入魔懒懒系统\n请联系你认为是*dalao*的*dadiao*来帮你做验证吧~\n*魔懒欢迎你的加入~,点击 /go 返回大厅*\n点击下面链接可以进入新人群噢~\n[戳我戳我](https://t.me/joinchat/AAAAAD6cFZdk3BqhIi-2bg)" ,parse_mode:"Markdown"
+	bot.api.send_message chat_id: message.from.id, text: "#{message.from.username}，你的信息已录入魔懒懒系统\n请联系你认为是*dalao*的*dadiao*来帮你做验证吧~\n*魔懒欢迎你的加入~,点击 /go 返回大厅*\n点击下面链接可以进入新人群噢~\n[戳我戳我](https://t.me/joinchat/AAAAAD6cFZdk3BqhIi-2bg)\n欢迎加入上海蓝军agent-stats群组：[Resistance Shanghai](https://www.agent-stats.com/groups.php?group=5518de0b2e60d8.19234090)" ,parse_mode:"Markdown"
 end

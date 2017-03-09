@@ -48,3 +48,5 @@ select_activity_info_leftjoin = "LEFT JOIN activity_users AS au ON ay.id=au.acti
 @query_title_exist = @client.prepare("SELECT * FROM achievement WHERE f_id=? AND frequency=?")
 
 @update_achievement_title = @client.prepare("UPDATE achievement SET frequency=?,title=? WHERE f_id=? AND frequency=?")
+
+@query_myachievement_exist = @client.prepare("SELECT * FROM profile WHERE telegram_id=? AND achievement_id=?")

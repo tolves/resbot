@@ -121,7 +121,7 @@ def view_activity message,bot
 
 	activity_detail = activity_detail.first
 	detail_text = "活动名称：#{activity_detail['name']}\n"
-	detail_text << "活动详情：#{activity_detail['name']}\n"
+	detail_text << "活动详情：#{activity_detail['detail']}\n"
 	detail_text << "活动组织特工：\n"
 	detail_text << organizer_text
 	detail_text << "参与活动特工：\n"
@@ -289,8 +289,7 @@ def notice_all_in_activity message,bot
 	users_id = ''
 	joined_users.each do |user|
 		begin
-			bot.logger.info(user)
-			bot.api.send_message chat_id: user['telegram_id'], text: message.text
+			bot.api.send_message chat_id: user['telegram_id'], text: "来自 @#{message.from.username} 的活动广播，请勿于bot回复：\n"+message.text
 			users_id << "[#{user['agent_id']}](https://t.me/#{user['telegram_username']}) ,"
 		rescue
 			bot.api.send_message chat_id: message.from.id , text: "[#{user['agent_id']}](https://t.me/#{user['telegram_username']}) 发送失败" ,parse_mode: 'Markdown', disable_web_page_preview:true

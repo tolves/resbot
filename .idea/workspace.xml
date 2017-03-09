@@ -2,12 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="296020b4-ab70-4267-b543-27e170bd984f" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/achievement.rb" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/duty.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/achievement.rb" afterPath="$PROJECT_DIR$/achievement.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activity.rb" afterPath="$PROJECT_DIR$/activity.rb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/relatives.rb" afterPath="$PROJECT_DIR$/relatives.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/res_bot.iml" afterPath="$PROJECT_DIR$/.idea/res_bot.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resiger.rb" afterPath="$PROJECT_DIR$/resiger.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/start.rb" afterPath="$PROJECT_DIR$/start.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/statement.rb" afterPath="$PROJECT_DIR$/statement.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
@@ -35,8 +35,8 @@
       <file leaf-file-name="start.rb" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/start.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-10.606061">
-              <caret line="49" column="26" selection-start-line="49" selection-start-column="26" selection-end-line="49" selection-end-column="64" />
+            <state vertical-scroll-proportion="-45.29032">
+              <caret line="52" column="65" selection-start-line="52" selection-start-column="26" selection-end-line="52" selection-end-column="65" />
               <folding />
             </state>
           </provider>
@@ -45,18 +45,64 @@
       <file leaf-file-name="statement.rb" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/statement.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.727273">
-              <caret line="45" column="30" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="30" />
+            <state vertical-scroll-proportion="-3.2424242">
+              <caret line="27" column="327" selection-start-line="27" selection-start-column="327" selection-end-line="27" selection-end-column="327" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="relatives.rb" pinned="false" current-in-tab="true">
+      <file leaf-file-name="activity.rb" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/activity.rb">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.616721">
+              <caret line="293" column="10" selection-start-line="293" selection-start-column="10" selection-end-line="293" selection-end-column="10" />
+              <folding>
+                <element signature="e#56#412#0" expanded="false" />
+                <element signature="e#415#643#0" expanded="false" />
+                <element signature="e#1155#2233#0" expanded="false" />
+                <element signature="e#6269#6513#0" expanded="false" />
+                <element signature="e#6540#7999#0" expanded="false" />
+                <element signature="e#8029#9667#0" expanded="false" />
+                <element signature="e#9670#10968#0" expanded="false" />
+                <element signature="e#10971#11675#0" expanded="false" />
+                <element signature="e#11678#12381#0" expanded="false" />
+                <element signature="e#12384#12613#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="relatives.rb" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/relatives.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.41042346">
-              <caret line="68" column="50" selection-start-line="68" selection-start-column="50" selection-end-line="68" selection-end-column="50" />
+            <state vertical-scroll-proportion="-0.87096775">
+              <caret line="112" column="42" selection-start-line="112" selection-start-column="19" selection-end-line="112" selection-end-column="42" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="achievement.rb" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/achievement.rb">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="68" column="0" selection-start-line="68" selection-start-column="0" selection-end-line="68" selection-end-column="0" />
+              <folding>
+                <element signature="n#modify_title#0;n#!!top" expanded="false" />
+                <element signature="n#modify_frequency_title#0;n#!!top" expanded="false" />
+                <element signature="n#modify_frequency_and_title#0;n#!!top" expanded="false" />
+                <element signature="n#add_achievement#0;n#!!top" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="resiger.rb" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/resiger.rb">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="46" column="50" selection-start-line="46" selection-start-column="50" selection-end-line="46" selection-end-column="50" />
               <folding />
             </state>
           </provider>
@@ -68,33 +114,6 @@
             <state vertical-scroll-proportion="0.0">
               <caret line="2" column="88" selection-start-line="2" selection-start-column="56" selection-end-line="2" selection-end-column="88" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="activity.rb" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/activity.rb">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="37.061226">
-              <caret line="170" column="2" selection-start-line="170" selection-start-column="2" selection-end-line="170" selection-end-column="47" />
-              <folding>
-                <element signature="e#56#412#0" expanded="false" />
-                <element signature="e#415#643#0" expanded="false" />
-                <element signature="e#1155#2233#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="achievement.rb" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/achievement.rb">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-17.969696">
-              <caret line="38" column="25" selection-start-line="38" selection-start-column="25" selection-end-line="38" selection-end-column="25" />
-              <folding>
-                <element signature="n#add_frequency_title#0;n#!!top" expanded="false" />
-                <element signature="n#modify_title#0;n#!!top" expanded="false" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -125,17 +144,17 @@
       <list>
         <option value="$PROJECT_DIR$/db_connect.rb" />
         <option value="$PROJECT_DIR$/functions.rb" />
-        <option value="$PROJECT_DIR$/resiger.rb" />
         <option value="$PROJECT_DIR$/review.rb" />
         <option value="$PROJECT_DIR$/modify_authority.rb" />
         <option value="$PROJECT_DIR$/func.rb" />
-        <option value="$PROJECT_DIR$/activity.rb" />
         <option value="$PROJECT_DIR$/security.rb" />
         <option value="$PROJECT_DIR$/duty.rb" />
         <option value="$PROJECT_DIR$/start.rb" />
-        <option value="$PROJECT_DIR$/statement.rb" />
-        <option value="$PROJECT_DIR$/achievement.rb" />
         <option value="$PROJECT_DIR$/relatives.rb" />
+        <option value="$PROJECT_DIR$/achievement.rb" />
+        <option value="$PROJECT_DIR$/resiger.rb" />
+        <option value="$PROJECT_DIR$/statement.rb" />
+        <option value="$PROJECT_DIR$/activity.rb" />
       </list>
     </option>
   </component>
@@ -194,6 +213,8 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -214,8 +235,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -463,7 +482,13 @@
       <option name="project" value="LOCAL" />
       <updated>1488275877661</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="成就添加删除">
+      <created>1488881266500</created>
+      <option name="number" value="00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1488881266501</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TodoView">
@@ -481,21 +506,21 @@
     <layout>
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32939914" sideWeight="0.49572194" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32939914" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32843652" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15" sideWeight="0.5" order="4" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32939914" sideWeight="0.5085561" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32843652" sideWeight="0.5085561" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32939914" sideWeight="0.49144384" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32843652" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32939914" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
     </layout>
@@ -530,7 +555,8 @@
     <MESSAGE value="查看自己创建的活动" />
     <MESSAGE value="活动添加人手" />
     <MESSAGE value="活动改用户权限，删除人，广播等" />
-    <option name="LAST_COMMIT_MESSAGE" value="活动改用户权限，删除人，广播等" />
+    <MESSAGE value="成就添加删除" />
+    <option name="LAST_COMMIT_MESSAGE" value="成就添加删除" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -555,6 +581,13 @@
             <element signature="e#56#412#0" expanded="false" />
             <element signature="e#415#643#0" expanded="false" />
             <element signature="e#1155#2233#0" expanded="false" />
+            <element signature="e#6269#6513#0" expanded="false" />
+            <element signature="e#6540#7999#0" expanded="false" />
+            <element signature="e#8029#9667#0" expanded="false" />
+            <element signature="e#9670#10968#0" expanded="false" />
+            <element signature="e#10971#11675#0" expanded="false" />
+            <element signature="e#11678#12381#0" expanded="false" />
+            <element signature="e#12384#12613#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -591,6 +624,13 @@
             <element signature="e#56#412#0" expanded="false" />
             <element signature="e#415#643#0" expanded="false" />
             <element signature="e#1155#2233#0" expanded="false" />
+            <element signature="e#6269#6513#0" expanded="false" />
+            <element signature="e#6540#7999#0" expanded="false" />
+            <element signature="e#8029#9667#0" expanded="false" />
+            <element signature="e#9670#10968#0" expanded="false" />
+            <element signature="e#10971#11675#0" expanded="false" />
+            <element signature="e#11678#12381#0" expanded="false" />
+            <element signature="e#12384#12613#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -627,6 +667,13 @@
             <element signature="e#56#412#0" expanded="false" />
             <element signature="e#415#643#0" expanded="false" />
             <element signature="e#1155#2233#0" expanded="false" />
+            <element signature="e#6269#6513#0" expanded="false" />
+            <element signature="e#6540#7999#0" expanded="false" />
+            <element signature="e#8029#9667#0" expanded="false" />
+            <element signature="e#9670#10968#0" expanded="false" />
+            <element signature="e#10971#11675#0" expanded="false" />
+            <element signature="e#11678#12381#0" expanded="false" />
+            <element signature="e#12384#12613#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -683,7 +730,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="15" column="16" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="16" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -691,7 +737,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="15" column="19" selection-start-line="15" selection-start-column="19" selection-end-line="15" selection-end-column="19" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -711,6 +756,13 @@
             <element signature="e#56#412#0" expanded="false" />
             <element signature="e#415#643#0" expanded="false" />
             <element signature="e#1155#2233#0" expanded="false" />
+            <element signature="e#6269#6513#0" expanded="false" />
+            <element signature="e#6540#7999#0" expanded="false" />
+            <element signature="e#8029#9667#0" expanded="false" />
+            <element signature="e#9670#10968#0" expanded="false" />
+            <element signature="e#10971#11675#0" expanded="false" />
+            <element signature="e#11678#12381#0" expanded="false" />
+            <element signature="e#12384#12613#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -735,7 +787,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="15" column="16" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="16" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -743,7 +794,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="15" column="19" selection-start-line="15" selection-start-column="19" selection-end-line="15" selection-end-column="19" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -782,7 +832,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="15" selection-end-column="48" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -798,7 +847,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="15" selection-end-column="48" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -822,7 +870,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="1" column="4" selection-start-line="1" selection-start-column="4" selection-end-line="1" selection-end-column="4" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -838,7 +885,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="2" column="14" selection-start-line="2" selection-start-column="2" selection-end-line="2" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -854,7 +900,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="10" column="59" selection-start-line="10" selection-start-column="59" selection-end-line="10" selection-end-column="59" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -865,19 +910,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resiger.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="15" column="16" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/review.rb">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="11" column="6" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="82" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -885,7 +921,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.38504463">
           <caret line="15" column="19" selection-start-line="15" selection-start-column="19" selection-end-line="15" selection-end-column="19" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -893,7 +928,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="1" column="4" selection-start-line="1" selection-start-column="4" selection-end-line="1" selection-end-column="4" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -901,6 +935,20 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.4723127">
           <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Ruby23-x64/lib/ruby/gems/2.3.0/gems/telegram-bot-ruby-0.7.2/lib/telegram/bot/client.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33333334">
+          <caret line="12" column="8" selection-start-line="12" selection-start-column="8" selection-end-line="12" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/start.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-45.29032">
+          <caret line="52" column="65" selection-start-line="52" selection-start-column="26" selection-end-line="52" selection-end-column="65" />
           <folding />
         </state>
       </provider>
@@ -913,50 +961,59 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/start.rb">
+    <entry file="file://$PROJECT_DIR$/relatives.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.606061">
-          <caret line="49" column="26" selection-start-line="49" selection-start-column="26" selection-end-line="49" selection-end-column="64" />
+        <state vertical-scroll-proportion="-0.87096775">
+          <caret line="112" column="42" selection-start-line="112" selection-start-column="19" selection-end-line="112" selection-end-column="42" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resiger.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="46" column="50" selection-start-line="46" selection-start-column="50" selection-end-line="46" selection-end-column="50" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/achievement.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="68" column="0" selection-start-line="68" selection-start-column="0" selection-end-line="68" selection-end-column="0" />
+          <folding>
+            <element signature="n#modify_title#0;n#!!top" expanded="false" />
+            <element signature="n#modify_frequency_title#0;n#!!top" expanded="false" />
+            <element signature="n#modify_frequency_and_title#0;n#!!top" expanded="false" />
+            <element signature="n#add_achievement#0;n#!!top" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/statement.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.727273">
-          <caret line="45" column="30" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="30" />
+        <state vertical-scroll-proportion="-3.2424242">
+          <caret line="27" column="327" selection-start-line="27" selection-start-column="327" selection-end-line="27" selection-end-column="327" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/activity.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="37.061226">
-          <caret line="170" column="2" selection-start-line="170" selection-start-column="2" selection-end-line="170" selection-end-column="47" />
+        <state vertical-scroll-proportion="0.616721">
+          <caret line="293" column="10" selection-start-line="293" selection-start-column="10" selection-end-line="293" selection-end-column="10" />
           <folding>
             <element signature="e#56#412#0" expanded="false" />
             <element signature="e#415#643#0" expanded="false" />
             <element signature="e#1155#2233#0" expanded="false" />
+            <element signature="e#6269#6513#0" expanded="false" />
+            <element signature="e#6540#7999#0" expanded="false" />
+            <element signature="e#8029#9667#0" expanded="false" />
+            <element signature="e#9670#10968#0" expanded="false" />
+            <element signature="e#10971#11675#0" expanded="false" />
+            <element signature="e#11678#12381#0" expanded="false" />
+            <element signature="e#12384#12613#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/achievement.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-17.969696">
-          <caret line="38" column="25" selection-start-line="38" selection-start-column="25" selection-end-line="38" selection-end-column="25" />
-          <folding>
-            <element signature="n#add_frequency_title#0;n#!!top" expanded="false" />
-            <element signature="n#modify_title#0;n#!!top" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/relatives.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.41042346">
-          <caret line="68" column="50" selection-start-line="68" selection-start-column="50" selection-end-line="68" selection-end-column="50" />
-          <folding />
         </state>
       </provider>
     </entry>

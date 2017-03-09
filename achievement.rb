@@ -4,12 +4,23 @@ def view_achievements message,bot
   achievements.each do |achievement|
     achi_kb_array << Telegram::Bot::Types::InlineKeyboardButton.new(text: achievement['particular'], callback_data: "view_achievement_#{achievement['id']}")
   end
+  user_auth = @query_agent_auth_statement_by_telegram_id.execute(message.from.id).first
+
   achi_kb = Array.new
   achi_kb_array.each_slice(2){|kb| achi_kb<<kb}
-  achi_kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: '添加新成就', callback_data: "add_achievement"),
-              Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")]
+  if user_auth['authority']<3
+    achi_kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: '添加新成就', callback_data: "add_achievement"),
+                Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")]
+  else
+    achi_kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")]
+  end
   achi_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: achi_kb)
-  bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: '当前所有成就列表，点击查看详情', reply_markup: achi_kb_makeup
+  begin
+    bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: '当前所有成就列表，点击查看详情', reply_markup: achi_kb_makeup
+  rescue
+    bot.api.send_message chat_id: message.from.id, text: '当前所有成就列表，点击查看详情', reply_markup: achi_kb_makeup
+  end
+
 end
 
 
@@ -27,12 +38,72 @@ def view_achievement message,bot
   info.each do |achi|
     detail << "#{achi['frequency']} => #{achi['title']} \n"
   end
+
   achi_kb = Array.new
-  achi_kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: '添加新数量级与对应称号', callback_data: "add_title"),
-              Telegram::Bot::Types::InlineKeyboardButton.new(text: '修改数量级与对应称号', callback_data: "modify_title")]
-  achi_kb << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")
+  user_auth = @query_agent_auth_statement_by_telegram_id.execute(message.from.id).first
+  if user_auth['authority']<3
+    achi_kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: '添加新数量级与对应称号', callback_data: "add_title"),
+                Telegram::Bot::Types::InlineKeyboardButton.new(text: '修改数量级与对应称号', callback_data: "modify_title")]
+  end
+  achi_kb << Telegram::Bot::Types::InlineKeyboardButton.new(text: '已完成此项成就', callback_data: "add_myachievement")
+  achi_kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回成就列表', callback_data: "overview_achievement"),Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")]
   achi_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: achi_kb)
-  bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: detail, reply_markup: achi_kb_makeup
+  begin
+    bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: detail, reply_markup: achi_kb_makeup
+  rescue
+    bot.api.send_message chat_id: message.from.id, text: detail, reply_markup: achi_kb_makeup
+  end
+
+end
+
+
+def add_myachievement message,bot
+  if @f_id.nil?
+    begin
+      bot.api.answer_callback_query callback_query_id:message.id , text: '发生错误'
+      return false
+    rescue
+      bot.api.send_message chat_id: message.from.id, text: "发生错误"
+      return false
+    end
+
+  end
+  bot.api.send_message chat_id: message.from.id, text: "成就系统中的数值就是又特工自行输入\n所以希望大家如实填写"
+  bot.api.send_message chat_id: message.from.id, text: "请输入你在本项成就中完成的数值\n某些值为boolean的成就，输入1即可", reply_markup:@force_reply
+end
+
+
+def add_myachievement_frequency message,bot
+  if @f_id.nil?
+    bot.api.send_message chat_id:message.from.id , text: '发生错误'
+    return false
+  end
+  frequency = message.text.strip
+  frequency = frequency.to_i
+  if frequency.class != Fixnum || frequency == '' || frequency == 0
+    bot.api.send_message chat_id:message.from.id , text: '必须输入数字'
+    bot.api.send_message chat_id: message.from.id, text: "请输入你在本项成就中完成的数值\n某些值为boolean的成就，输入1即可", reply_markup:@force_reply
+    return false
+  end
+  achi_exist = @query_myachievement_exist.execute message.from.id,@f_id
+  update_myachie = @client.prepare("UPDATE profile SET achievement_frequency=? WHERE telegram_id=? AND achievement_id=?")
+  insert_myachie = @client.prepare("INSERT INTO profile (telegram_id,achievement_id,achievement_frequency) VALUES (?,?,?)")
+
+  achi_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回成就详情', callback_data: "view_achievement_#{@f_id}"),Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回成就列表', callback_data: "overview_achievement"),Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回大厅', callback_data: "back_overview")]]
+  achi_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: achi_kb)
+
+  begin
+    if achi_exist.size!=0
+        update_myachie.execute frequency,message.from.id,@f_id
+    elsif achi_exist.size==0
+        insert_myachie.execute message.from.id,@f_id,frequency
+    end
+    bot.api.send_message chat_id: message.from.id, text: "当前成就统计已更新", reply_markup: achi_kb_makeup
+    @f_id = nil
+  rescue
+    bot.api.send_message chat_id: message.from.id, text: "哎呀呀呀出错辣，快小窗敲豆腐丝 @tolves，反正敲了也不会修"
+    return false
+  end
 end
 
 
@@ -41,7 +112,7 @@ def add_title message,bot
     bot.api.answer_callback_query callback_query_id:message.id , text: '发生错误'
     return false
   end
-  bot.api.send_message chat_id: message.from.id, text: "请输入要新增数量级与称号\n格式为：数量=>称号\n例如：2=>大魔王", reply_markup:@force_reply
+  bot.api.send_message chat_id: message.from.id, text: "请输入要新增数量级与称号\n格式为：数量=>称号\n例如：2=>大魔王\n某些值为boolean的成就，可设置为1=>称号", reply_markup:@force_reply
 end
 
 
@@ -68,9 +139,11 @@ def add_frequency_title message,bot
     bot.api.send_message chat_id: message.from.id, text: "请输入要新增数量级与称号\n格式为：数量=>称号\n例如：2=>大魔王", reply_markup:@force_reply
     return false
   end
+  achi_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回成就详情', callback_data: "view_achievement_#{@f_id}"),Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回成就列表', callback_data: "overview_achievement"),Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回大厅', callback_data: "back_overview")]]
+  achi_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: achi_kb)
   begin
     @insert_achievement_title.execute @f_id,frequency,title
-    bot.api.send_message chat_id: message.from.id, text: "新的数量级与称号输入成功,点击 /go 返回大厅(其实还可以返回成就"
+    bot.api.send_message chat_id: message.from.id, text: "新的数量级与称号输入成功", reply_markup: achi_kb_makeup
     @f_id = nil
   rescue
     bot.api.send_message chat_id: message.from.id, text: "哎呀呀呀出错辣，快小窗敲豆腐丝 @tolves，反正敲了也不会修"
@@ -132,10 +205,11 @@ def modify_frequency_and_title message,bot
     @f_id = nil
     return false
   end
-
+  achi_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回成就详情', callback_data: "view_achievement_#{@f_id}"),Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回成就列表', callback_data: "overview_achievement"),Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回大厅', callback_data: "back_overview")]]
+  achi_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: achi_kb)
   begin
     @update_achievement_title.execute mod_frequency,title,@f_id,@frequency
-    bot.api.send_message chat_id: message.from.id, text: "数量级与称号修改成功,点击 /go 返回大厅(其实还可以返回成就"
+    bot.api.send_message chat_id: message.from.id, text: "数量级与称号修改成功"  , reply_markup: achi_kb_makeup
     @f_id = nil
     @frequency = nil
   rescue
@@ -152,9 +226,11 @@ end
 
 def add_achievement_particular message,bot
   particular = message.text.strip
+  achi_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: '继续添加', callback_data: "add_achievement"),Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回成就列表', callback_data: "overview_achievement"),Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回大厅', callback_data: "back_overview")]]
+  achi_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: achi_kb)
   begin
     @insert_achievement_particular.execute particular
-    bot.api.send_message chat_id: message.from.id, text: "新增成就成功，点击 /go 返回大厅"
+    bot.api.send_message chat_id: message.from.id, text: "新增成就成功", reply_markup: achi_kb_makeup
   rescue
 
   end
