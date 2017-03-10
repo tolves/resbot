@@ -38,6 +38,12 @@ def view_achievement message,bot
   info.each do |achi|
     detail << "#{achi['frequency']} => #{achi['title']} \n"
   end
+  detail << "\n本项成就top5：\n"
+  top5 = @client.query("SELECT * FROM profile WHERE achievement_id=#{f_id} ORDER BY achievement_frequency DESC LIMIT 5")
+  detail << top5.map { |user|
+    agent = @query_id_by_telegram_id.execute(user['telegram_id']).first
+    "#{agent['agent_id']} => #{user['achievement_frequency']}"
+  }.join("\n")
 
   achi_kb = Array.new
   user_auth = @query_agent_auth_statement_by_telegram_id.execute(message.from.id).first
@@ -68,7 +74,7 @@ def add_myachievement message,bot
     end
 
   end
-  bot.api.send_message chat_id: message.from.id, text: "成就系统中的数值就是又特工自行输入\n所以希望大家如实填写"
+  bot.api.send_message chat_id: message.from.id, text: "成就系统中的数值就是由特工自行输入\n所以希望大家如实填写"
   bot.api.send_message chat_id: message.from.id, text: "请输入你在本项成就中完成的数值\n某些值为boolean的成就，输入1即可", reply_markup:@force_reply
 end
 

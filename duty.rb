@@ -9,7 +9,11 @@ def view_duty message,bot
   duty_kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: '添加新活动职责', callback_data: "add_duty"),
               Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")]
   duty_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: duty_kb)
-  bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: '当前所有活动内职责列表', reply_markup: duty_kb_makeup
+  begin
+    bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: '当前所有活动内职责列表', reply_markup: duty_kb_makeup
+  rescue
+    bot.api.send_message chat_id: message.from.id, text: '当前所有活动内职责列表', reply_markup: duty_kb_makeup
+  end
 end
 
 

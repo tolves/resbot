@@ -2,7 +2,12 @@
 def review_waiting message,bot
 	agent_auth = @query_agent_admin_statement.execute(message.from.id)
 	if agent_auth.size == 0
-		bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'少年郎你没有审核权限啦'
+		begin
+			bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'少年郎你没有审核权限啦'
+		rescue
+			bot.api.send_message chat_id: message.from.id, text:'少年郎你没有审核权限啦'
+		end
+
 		return false
 	end
 
@@ -26,7 +31,12 @@ def review_waiting message,bot
 	end
 
 	waiting_list_markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: waiting_list_kb)
-	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'请选择你要审核的特工id', reply_markup: waiting_list_markup
+
+	begin
+		bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'请选择你要审核的特工id', reply_markup: waiting_list_markup
+	rescue
+		bot.api.send_message chat_id: message.from.id, text:'请选择你要审核的特工id', reply_markup: waiting_list_markup
+	end
 end
 
 #取得待审核特工当前信息
@@ -43,10 +53,15 @@ def get_waiting_detail message,bot
 	                    ]]
 	approve_markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: approve_keyboard)
 	waiting_agent = waiting_agent.first
-	waiting_agent_detail = "被审核用户 ingress id： #{waiting_agent['agent_id']}\n"
-	waiting_agent_detail << "被审核用户 telegram id： @#{waiting_agent['telegram_username']}\n"
+	waiting_agent_detail = "被审核特工 ingress id： #{waiting_agent['agent_id']}\n"
+	waiting_agent_detail << "被审核特工 telegram id： @#{waiting_agent['telegram_username']}\n"
 	waiting_agent_detail << "请谨慎审核该特工是否是可信特工\n"
-	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: waiting_agent_detail, reply_markup: approve_markup
+
+	begin
+		bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: waiting_agent_detail, reply_markup: approve_markup
+	rescue
+		bot.api.send_message chat_id: message.from.id, text: waiting_agent_detail, reply_markup: approve_markup
+	end
 end
 
 #决定审核结果
@@ -60,11 +75,15 @@ def judgement_waiting message,bot
 	case message.data
 		when /review_agent_approved_./
 			agent_id = message.data.sub /review_agent_approved_/,""
+			waiting_agent = @query_agent_auth_statement_by_agent_id.execute("#{agent_id}").first
 			judgement_statement.execute(4,agent_id) #rookie
+      bot.api.send_message chat_id: waiting_agent["telegram_id"], text: '恭喜，你已经被审核通过，现在点击 /go 开始浏览吧'
 			judge_text = "#{agent_id} 已经通过审核"
 		when /review_agent_refused_./
 			agent_id = message.data.sub /review_agent_refused_/,""
+			waiting_agent = @query_agent_auth_statement_by_agent_id.execute("#{agent_id}").first
 			judgement_statement.execute(5,agent_id)  #untrusted
+      bot.api.send_message chat_id: waiting_agent["telegram_id"], text: '很遗憾，你未被审核通过'
 			judge_text = "#{agent_id} 未通过审核"
 		when 'review_agent_back'
 			review_waiting message,bot
@@ -73,5 +92,10 @@ def judgement_waiting message,bot
 			judge_text = "既然什么也不做，那就咸鱼一会儿吧"
 	end
 	@update_agent_updatedate_by_telegram_id.execute(message.from.id) #更新用户行为时间
-	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: judge_text, reply_markup: judge_markup
+	begin
+		bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: judge_text, reply_markup: judge_markup
+	rescue
+		bot.api.send_message chat_id: message.from.id, text: judge_text, reply_markup: judge_markup
+	end
+
 end

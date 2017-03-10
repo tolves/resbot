@@ -108,29 +108,41 @@ def get_me message,bot
 		end
 	end
 
-  as_detail = "\n数据(来自agent-stats)："
+  as_detail = "\n数据(来自Agent-stats)："
 	astoken = 'MhSh3VLluoWZ08sJcvUe'
 	shres_groupid = '5518de0b2e60d8.19234090'
 	timeframe = %w(now week month custom)
-	as = open("https://api.agent-stats.com/groups/#{shres_groupid}/#{timeframe[0]}",
-						"AS-Key"=>"#{astoken}"
-	)
-	if as.status== ["200","OK"]
-    agents = JSON.parse(as.read)
-		if agents[user['agent_id']].nil?
-			as_detail << "\n你尚未在agent-stats中上传数据且未加入[Resistance Shanghai](https://www.agent-stats.com/groups.php?group=#{shres_groupid})群组\n请上传数据并加入[Resistance Shanghai](https://www.agent-stats.com/groups.php?group=#{shres_groupid})后再次刷新"
-    else
-      as_detail << agents[user['agent_id']].map { |k,v|
-        next if k == ('custom' || 'guardian')
-        k = k.sub('_','-')
-        "#{k}=>#{v}"
-      }.join("\n")
-		end
-	end
+  begin
+    as = open("https://api.agent-stats.com/groups/#{shres_groupid}/#{timeframe[0]}",
+              "AS-Key"=>"#{astoken}"
+    )
+    if as.status== ["200","OK"]
+      agents = JSON.parse(as.read)
+      if agents[user['agent_id']].nil?
+        as_detail << "\n你尚未在Agent-stats中上传数据且未加入[Resistance Shanghai](https://www.agent-stats.com/groups.php?group=#{shres_groupid})群组\n请上传数据并加入[Resistance Shanghai](https://www.agent-stats.com/groups.php?group=#{shres_groupid})后再次刷新"
+      else
+        as_detail << agents[user['agent_id']].map { |k,v|
+          next if k == ('custom' || 'guardian')
+          k = k.sub('_','-')
+          "#{k}=>#{v}"
+        }.join("\n")
+      end
+    end
+  rescue
+    as_detail << "\nAgent-stats 数据读取发生错误"
+  end
+
+
+
   detail << as_detail
 	kb = Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")
 	makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
-	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: detail , parse_mode: 'Markdown', disable_web_page_preview:true, reply_markup: makeup
+  begin
+    bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: detail , parse_mode: 'Markdown', disable_web_page_preview:true, reply_markup: makeup
+  rescue
+    bot.api.send_message chat_id: message.from.id, text: detail , parse_mode: 'Markdown', disable_web_page_preview:true, reply_markup: makeup
+  end
+
 end
 
 

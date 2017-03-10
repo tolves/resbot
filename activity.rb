@@ -3,7 +3,11 @@
 def create_activity message,bot
 	agent_auth = @query_agent_admin_statement.execute(message.from.id)
 	if agent_auth.size == 0
-		bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'少年郎你没有创建权限啦'
+    begin
+      bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'少年郎你没有创建权限啦'
+    rescue
+      bot.api.send_message chat_id: message.from.id, text: '少年郎你没有创建权限啦'
+    end
 		return false
 	end
 	bot.api.send_message chat_id: message.from.id, text: '请输入要创建的活动名称：', reply_markup:@force_reply
@@ -53,8 +57,11 @@ def create_activity_security_level message,bot
 		raise_errormessage message,bot
 		retry
 	end
-
-	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: "成功设置活动密级，点击 /go 返回大厅"
+  begin
+    bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: "成功设置活动密级，点击 /go 返回大厅"
+  rescue
+    bot.api.send_message chat_id: message.from.id, text: '成功设置活动密级，点击 /go 返回大厅'
+  end
 end
 
 #查看活动,根据标签选择不同的query
@@ -92,11 +99,15 @@ def view_activities message,bot
 
 		acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: button_text, callback_data: "view_activity_#{activity['id']}_#{action}")
 	end
-	acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")
 	acty_kb = Array.new
 	acty_kb_a.each_slice(2){|kb| acty_kb<<kb}
+	acty_kb << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")
 	acty_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: acty_kb)
-	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'活动列表：', reply_markup: acty_makeup
+  begin
+    bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'活动列表：', reply_markup: acty_makeup
+  rescue
+    bot.api.send_message chat_id: message.from.id, text:'活动列表：', reply_markup: acty_makeup
+  end
 end
 
 #查看活动详情
@@ -133,17 +144,23 @@ def view_activity message,bot
 		acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "增加参与特工", callback_data: "activity_addagent_#{activity_id}")
 		acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "修改特工活动权限", callback_data: "activity_modagent_#{activity_id}")
 		acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "删除特工", callback_data: "activity_delagent_#{activity_id}")
+		acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "归档活动", callback_data: "activity_filing_#{activity_id}")
 		acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "活动广播", callback_data: "activity_noticeagent_#{activity_id}")
 	end
 	# 需要每一级加上action标签。很烦，所以注释掉了
 	# acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "overview_activities_#{action}")
-	acty_kb_a << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")
+
 
 	acty_kb = Array.new
 	acty_kb_a.each_slice(2){|kb| acty_kb<<kb}
-
+  acty_kb << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")
 	ac_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: acty_kb)
-	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: detail_text , parse_mode: 'Markdown', disable_web_page_preview:true , reply_markup: ac_kb_makeup
+
+  begin
+    bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: detail_text , parse_mode: 'Markdown', disable_web_page_preview:true , reply_markup: ac_kb_makeup
+  rescue
+    bot.api.send_message chat_id: message.from.id, text: detail_text , parse_mode: 'Markdown', disable_web_page_preview:true , reply_markup: ac_kb_makeup
+  end
 end
 
 #向活动添加人
@@ -167,7 +184,7 @@ def addagent_into_activity message,bot
 		bot.api.send_message chat_id: message.from.id, text: '发生错误，输入 /go 返回大厅'
 		return false
 	end
-
+  acinfo = @query_activity_info.execute(@addagent[0]).first
 	users_agentid = message.text.strip.split(',')
 	users_agentid.each do |agent_id|
 		agent_detail = @query_ingressid_exist_statement.execute agent_id
@@ -178,8 +195,9 @@ def addagent_into_activity message,bot
 		agent_detail = agent_detail.first
 		begin
 			@insert_addagent_activity.execute @addagent[0],agent_detail['telegram_id'],5
-			bot.api.send_message chat_id: message.from.id, text: "成功添加特工 #{agent_id} 至活动"
+      bot.api.send_message chat_id: agent_detail['telegram_id'], text: "您已被添加至活动：#{acinfo['name']}"
 			@update_activity.execute @addagent[0]
+      bot.api.send_message chat_id: message.from.id, text: "成功添加特工 #{agent_id} 至活动"
 		rescue
 			bot.api.send_message chat_id: message.from.id, text: "发生错误，联系豆腐丝 @tolves 修bug"
 			next
@@ -220,7 +238,11 @@ def activity_agent_list message,bot,active
 	acm_kb = Array.new
 	acm_kb_a.each_slice(2){|kb| acm_kb<<kb}
 	acm_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: acm_kb)
-	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'待修改特工列表：', reply_markup: acm_makeup
+  begin
+    bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'待修改特工列表：', reply_markup: acm_makeup
+  rescue
+    bot.api.send_message chat_id: message.from.id, text:'待修改特工列表：', reply_markup: acm_makeup
+  end
 end
 
 
@@ -241,7 +263,12 @@ def modagent_activity message,bot
 	duty_kb = Array.new
 	duty_kb_a.each_slice(3){|kb| duty_kb<<kb}
 	acm_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: duty_kb)
-	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:"[#{target['agent_id']}](https://t.me/#{target['telegram_username']}) 当前职责：#{target['duty_name']}\n要将其修改为：", reply_markup: acm_makeup, parse_mode: 'Markdown', disable_web_page_preview:true
+
+  begin
+    bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:"[#{target['agent_id']}](https://t.me/#{target['telegram_username']}) 当前职责：#{target['duty_name']}\n要将其修改为：", reply_markup: acm_makeup, parse_mode: 'Markdown', disable_web_page_preview:true
+  rescue
+    bot.api.send_message chat_id: message.from.id, text:"[#{target['agent_id']}](https://t.me/#{target['telegram_username']}) 当前职责：#{target['duty_name']}\n要将其修改为：", reply_markup: acm_makeup, parse_mode: 'Markdown', disable_web_page_preview:true
+  end
 end
 
 
@@ -254,7 +281,8 @@ def modagent_activity_duty message,bot
 		@mod_activity_agent_duty_by_acid_and_telid.execute(duty_id,activity_id,telegram_id)
 		@update_activity.execute activity_id
 		bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: '特工修改完毕', reply_markup: ac_kb_makeup
-	rescue
+  rescue
+      bot.api.send_message chat_id: message.from.id,text: '特工修改完毕', reply_markup: ac_kb_makeup
 	end
 end
 
@@ -268,8 +296,9 @@ def delagent_activity message,bot
 		@del_activity_agent_by_acid_and_telid_and_duty.execute(activity_id,telegram_id,duty_id)
 		@update_activity.execute activity_id
 		bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: '特工删除完毕', reply_markup: ac_kb_makeup
-	rescue
-	end
+  rescue
+    bot.api.send_message chat_id: message.from.id, text: '特工删除完毕', reply_markup: ac_kb_makeup
+  end
 end
 
 
@@ -298,6 +327,19 @@ def notice_all_in_activity message,bot
 	ac_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回上一级", callback_data: "view_activity_#{@acid}"),
 	          Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")]]
 	ac_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: ac_kb)
-	bot.api.send_message chat_id: message.from.id , text: "向 #{users_id} 发送广播信息:\n #{message.text} \n成功" ,parse_mode: 'Markdown', disable_web_page_preview:true, reply_markup: ac_kb_makeup
+	bot.api.send_message chat_id: message.from.id , text: "向 #{users_id} \n发送广播:\n #{message.text} \n成功" ,parse_mode: 'Markdown', disable_web_page_preview:true, reply_markup: ac_kb_makeup
+end
+
+
+def activity_filing message,bot
+	activity_id = message.data.sub(/activity_filing_/ , "")
+	filing_acti = @client.prepare("UPDATE activity SET status=\"0\" WHERE id=?")
+	begin
+    filing_acti.execute activity_id
+    @update_activity.execute activity_id
+	rescue
+		bot.api.send_message chat_id: message.from.id, text: '发生错误'
+	end
+	bot.api.answer_callback_query callback_query_id:message.id , text: '活动已成功归档'
 end
 

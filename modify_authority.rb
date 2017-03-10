@@ -2,7 +2,11 @@
 def modify_agent_auth message,bot
 	agent_auth = @query_agent_admin_statement.execute(message.from.id)
 	if agent_auth.size == 0
-		bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'少年郎你没有修改权限啦'
+		begin
+			bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text:'少年郎你没有修改权限啦'
+		rescue
+			bot.api.send_message chat_id: message.from.id, text:'少年郎你没有修改权限啦'
+		end
 		return false
 	end
 	bot.api.send_message chat_id: message.from.id, text: '请输入需要修改权限特工的ingress id：', reply_markup:@force_reply
@@ -63,5 +67,9 @@ def amend_agent message,bot
 	amend_text = "特工：#{agent_id} 权限已经更新"
 	amend_kb = Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")
 	amend_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: amend_kb)
-	bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: amend_text , reply_markup:amend_makeup
+	begin
+		bot.api.edit_message_text chat_id: message.from.id, message_id:message.message.message_id, text: amend_text , reply_markup:amend_makeup
+	rescue
+		bot.api.send_message chat_id: message.from.id, text: amend_text , reply_markup:amend_makeup
+	end
 end

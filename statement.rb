@@ -34,6 +34,8 @@ select_activity_info_leftjoin = "LEFT JOIN activity_users AS au ON ay.id=au.acti
 
 @update_activity = @client.prepare("UPDATE activity SET updated_on=\"#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}\" WHERE id=?")
 
+
+
 @query_activity_duty_by_activity_id = @client.prepare("SELECT *,ad.duty_name,ad.id as adid FROM activity_users AS au LEFT JOIN users AS us ON au.telegram_id=us.telegram_id LEFT JOIN activity_duty AS ad ON au.duty=ad.id WHERE au.activity_id=? AND au.telegram_id=?")
 
 @del_activity_agent_by_acid_and_telid_and_duty = @client.prepare("DELETE FROM activity_users WHERE activity_id=? AND telegram_id=? AND duty=?")

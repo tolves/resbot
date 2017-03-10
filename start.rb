@@ -4,12 +4,14 @@ require 'json'
 require 'uri'
 require 'openssl'
 require 'open-uri'
+require 'net/https'
 OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 token = '344686538:AAGWv2ANcHGZhoZDvubC5xMF2l9bOdJnh9k'
 
 require_relative  'relatives'
 
 Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
+	begin
 	bot.logger.info('Bot has been started')
 	bot.listen do |message|
 		case message.class.to_s
@@ -39,18 +41,18 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 									next if addagent_into_activity message,bot
 								when '请输入广播给活动内除组织者外所有成员的信息：'
 									next if notice_all_in_activity message,bot
-                when '请输入要新增的活动职责：'
-                  next if create_new_duty message,bot
-                when "请输入要新增数量级与称号\n格式为：数量=>称号\n例如：2=>大魔王\n某些值为boolean的成就，可设置为1=>称号"
-                  next if add_frequency_title message,bot
-                when "请输入要修改的数量级与称号中的数量级："
-                  next if modify_frequency_title message,bot
-                when "请输入要修改的数量级与称号\n格式为：数量=>称号\n例如：2=>大魔王"
-                  next if modify_frequency_and_title message,bot
-                when "请输入新增加的成就描述："
-                  next if add_achievement_particular message,bot
-                when "请输入你在本项成就中完成的数值\n某些值为boolean的成就，输入1即可"
-                  next if add_myachievement_frequency message,bot
+								when '请输入要新增的活动职责：'
+									next if create_new_duty message,bot
+								when "请输入要新增数量级与称号\n格式为：数量=>称号\n例如：2=>大魔王\n某些值为boolean的成就，可设置为1=>称号"
+									next if add_frequency_title message,bot
+								when "请输入要修改的数量级与称号中的数量级："
+									next if modify_frequency_title message,bot
+								when "请输入要修改的数量级与称号\n格式为：数量=>称号\n例如：2=>大魔王"
+									next if modify_frequency_and_title message,bot
+								when "请输入新增加的成就描述："
+									next if add_achievement_particular message,bot
+								when "请输入你在本项成就中完成的数值\n某些值为boolean的成就，输入1即可"
+									next if add_myachievement_frequency message,bot
 
 								else
 									bot.logger.info(message.reply_to_message)
@@ -72,8 +74,8 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 						create_activity message,bot
 					when 'overview_agent_duty'
 						view_duty message,bot
-          when 'overview_achievement'
-            view_achievements message,bot
+					when 'overview_achievement'
+						view_achievements message,bot
 
 
 					when /overview_activities_./
@@ -101,27 +103,44 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 						activity_agent_list message,bot,'del'
 					when /activity_noticeagent_./
 						activity_noticeagent message,bot
+					when /activity_filing_./
+						activity_filing message,bot
 					when /agent_activity_mod_.+_.+_.+/
 						modagent_activity message,bot
 					when /agent_activity_del_.+_.+_.+/
 						delagent_activity message,bot
 					when /duty_level_.*_.*_.*/
 						modagent_activity_duty message,bot
-          when 'add_duty'
-            add_duty message,bot
-          when /view_achievement_./
-            view_achievement message,bot
-          when 'add_title'
-            add_title message,bot
-          when 'modify_title'
-            modify_title message,bot
-          when 'add_achievement'
-            add_achievement message,bot
-          when 'add_myachievement'
-            add_myachievement message,bot
+					when 'add_duty'
+						add_duty message,bot
+					when /view_achievement_./
+						view_achievement message,bot
+					when 'add_title'
+						add_title message,bot
+					when 'modify_title'
+						modify_title message,bot
+					when 'add_achievement'
+						add_achievement message,bot
+					when 'add_myachievement'
+						add_myachievement message,bot
 				end
 			else
 
 		end
 	end
+	rescue Telegram::Bot::Exceptions::ResponseError => e
+		case e.error_code
+      when 403
+        puts 'blocked by user'
+				retry
+      when 400
+				puts 'connection faild'
+				retry
+      else
+        puts e.to_s
+        retry
+		end
+	end
 end
+
+
