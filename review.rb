@@ -29,7 +29,8 @@ def review_waiting message,bot
 	waiting_list.each do |agent|
 		waiting_list_kb << Telegram::Bot::Types::InlineKeyboardButton.new(text: agent['agent_id'], callback_data: "review_waiting_#{agent['agent_id']}")
 	end
-
+	# waiting_list.each_slice(2){|kb| wait_kb<<kb}
+	# wait_kb << Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")
 	waiting_list_markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: waiting_list_kb)
 
 	begin

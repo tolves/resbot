@@ -8,7 +8,7 @@ def bind message,bot
 	end
 	begin
 		bot.api.send_message chat_id: message.from.id, text: "你尚未注册魔懒懒系统 \n下面进入验证过程："
-		bot.api.send_message chat_id: message.from.id, text: '请认真输入你的游戏id，输错了就打pp', reply_markup:@force_reply
+		bot.api.send_message chat_id: message.from.id, text: '请认真输入你的游戏id，输错了就打pp，必须回复本条方可正确录入', reply_markup:@force_reply
 	rescue
 		bot.api.send_message chat_id: message.chat.id, text: '你尚未注册魔懒懒系统，请先小窗bot /start 开始，要不然收不到信息的哟'
 		return false

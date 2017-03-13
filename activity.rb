@@ -187,15 +187,21 @@ def addagent_into_activity message,bot
   acinfo = @query_activity_info.execute(@addagent[0]).first
 	users_agentid = message.text.strip.split(',')
 	users_agentid.each do |agent_id|
+    next if agent_id==''
+    next if agent_id.nil?
 		agent_detail = @query_ingressid_exist_statement.execute agent_id
 		if agent_detail.size == 0
 			bot.api.send_message chat_id: message.from.id, text: "特工 #{agent_id} 尚未注册本系统，请提醒注册"
 			next
 		end
 		agent_detail = agent_detail.first
+		if @query_users_in_activity.execute(@addagent[0],agent_detail['telegram_id']).size!=0
+      bot.api.send_message chat_id: message.from.id, text: "#{agent_id} 重复添加"
+      next
+		end
 		begin
 			@insert_addagent_activity.execute @addagent[0],agent_detail['telegram_id'],5
-      bot.api.send_message chat_id: agent_detail['telegram_id'], text: "您已被添加至活动：#{acinfo['name']}"
+      bot.api.send_message chat_id: agent_detail['telegram_id'], text: "您被添加至活动：#{acinfo['name']}"
 			@update_activity.execute @addagent[0]
       bot.api.send_message chat_id: message.from.id, text: "成功添加特工 #{agent_id} 至活动"
 		rescue

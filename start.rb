@@ -29,7 +29,7 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 					else
 						if !message.reply_to_message.nil?
 							case message.reply_to_message.text
-								when '请认真输入你的游戏id，输错了就打pp'
+								when '请认真输入你的游戏id，输错了就打pp，必须回复本条方可正确录入'
 									next if resiger message,bot
 								when '请输入需要修改权限特工的ingress id：'
 									next if check_modified_agent message,bot
@@ -121,7 +121,7 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 						modify_title message,bot
 					when 'add_achievement'
 						add_achievement message,bot
-					when 'add_myachievement'
+					when /add_myachievement_./
 						add_myachievement message,bot
 				end
 			else
@@ -132,7 +132,7 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 		case e.error_code
       when 403
         puts 'blocked by user'
-				retry
+        # retry
       when 400
 				puts 'connection faild'
 				retry
