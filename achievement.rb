@@ -25,8 +25,9 @@ end
 
 
 def view_achievement message,bot
-  @admin_ac = f_id = message.data.sub(/view_achievement_/ , "")
-  info = @client.query("SELECT * FROM achievement WHERE f_id=#{f_id}")
+  f_id = message.data.sub(/view_achievement_/ , "")
+  instance_variable_set("@_am#{message.from.id}", [message.from.id,f_id])
+  info = @client.query("SELECT * FROM achievement WHERE f_id=#{f_id} ORDER BY frequency")
   achievement = @client.query("SELECT * FROM achievement WHERE id=#{f_id} AND f_id=0 AND frequency=0")
   if achievement.size == 0
     bot.api.answer_callback_query callback_query_id:message.id , text: '出错啦'
@@ -62,10 +63,6 @@ def view_achievement message,bot
 
 end
 
-
-class Mycm
-
-end
 
 def add_myachievement message,bot
   f_id = message.data.sub(/add_myachievement_/ , "")
@@ -121,7 +118,8 @@ end
 
 
 def add_title message,bot
-  if @admin_ac.nil?
+  m_id = instance_variable_get("@_am#{message.from.id}")
+  if m_id.nil?
     bot.api.answer_callback_query callback_query_id:message.id , text: '发生错误'
     return false
   end
@@ -130,7 +128,8 @@ end
 
 
 def add_frequency_title message,bot
-  if @admin_ac.nil?
+  m_id = instance_variable_get("@_am#{message.from.id}")
+  if m_id.nil?
     bot.api.send_message chat_id:message.from.id , text: '发生错误'
     return false
   end
@@ -138,26 +137,23 @@ def add_frequency_title message,bot
   frequency = frequency.to_i
   if frequency.class != Fixnum || frequency == ''
     bot.api.send_message chat_id:message.from.id , text: '发生错误'
-    @admin_ac = nil
     return false
   end
   if title.class != String || title==''
     bot.api.send_message chat_id:message.from.id , text: '发生错误'
-    @admin_ac = nil
     return false
   end
-  title_exist = @query_title_exist.execute @f_id,frequency
+  title_exist = @query_title_exist.execute m_id[1],frequency
   if title_exist.size!=0
     bot.api.send_message chat_id:message.from.id , text: '该数量级已经存在，请再次输入'
     bot.api.send_message chat_id: message.from.id, text: "请输入要新增数量级与称号\n格式为：数量=>称号\n例如：2=>大魔王", reply_markup:@force_reply
     return false
   end
-  achi_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回成就详情', callback_data: "view_achievement_#{@f_id}"),Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回成就列表', callback_data: "overview_achievement"),Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回大厅', callback_data: "back_overview")]]
+  achi_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回成就详情', callback_data: "view_achievement_#{m_id[1]}"),Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回成就列表', callback_data: "overview_achievement"),Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回大厅', callback_data: "back_overview")]]
   achi_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: achi_kb)
   begin
-    @insert_achievement_title.execute @f_id,frequency,title
+    @insert_achievement_title.execute m_id[1],frequency,title
     bot.api.send_message chat_id: message.from.id, text: "新的数量级与称号输入成功", reply_markup: achi_kb_makeup
-    @admin_ac = nil
   rescue
     bot.api.send_message chat_id: message.from.id, text: "哎呀呀呀出错辣，快小窗敲豆腐丝 @tolves，反正敲了也不会修"
     return false
@@ -166,7 +162,8 @@ end
 
 
 def modify_title message,bot
-  if @admin_ac.nil?
+  m_id = instance_variable_get("@_am#{message.from.id}")
+  if m_id.nil?
     bot.api.send_message chat_id:message.from.id , text: '发生错误'
     return false
   end
@@ -175,17 +172,18 @@ end
 
 
 def modify_frequency_title message,bot
-  if @admin_ac.nil?
+  m_id = instance_variable_get("@_am#{message.from.id}")
+  if m_id.nil?
     bot.api.send_message chat_id:message.from.id , text: '发生错误'
     return false
   end
-  @frequency = frequency = message.text.to_i
+  frequency = message.text.to_i
+  instance_variable_set("@_am#{message.from.id}", [message.from.id,m_id[1],frequency])
   if frequency==0
     bot.api.send_message chat_id:message.from.id , text: '发生错误'
-    @admin_ac = nil
     return false
   end
-  exist = @query_title_exist.execute @f_id,frequency
+  exist = @query_title_exist.execute m_id[1],frequency
   if exist.size !=1
     bot.api.send_message chat_id:message.from.id , text: '该数量级不存在，请再次输入'
     bot.api.send_message chat_id: message.from.id, text: "请输入要修改的数量级与称号中的数量级：", reply_markup:@force_reply
@@ -196,35 +194,30 @@ end
 
 
 def modify_frequency_and_title message,bot
-
-  if @admin_ac.nil?
+  m_id = instance_variable_get("@_am#{message.from.id}")
+  if m_id.nil?
     bot.api.send_message chat_id:message.from.id , text: '发生错误'
     return false
   end
-  if @frequency.nil?
+  if m_id[2].nil?
     bot.api.send_message chat_id:message.from.id , text: '发生错误'
-    @admin_ac = nil
     return false
   end
   mod_frequency,title = message.text.strip.split('=>',2)
   mod_frequency = mod_frequency.to_i
   if mod_frequency.class != Fixnum || mod_frequency == ''
     bot.api.send_message chat_id:message.from.id , text: '发生错误'
-    @admin_ac = nil
     return false
   end
   if title.class != String || title==''
     bot.api.send_message chat_id:message.from.id , text: '发生错误'
-    @admin_ac = nil
     return false
   end
-  achi_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回成就详情', callback_data: "view_achievement_#{@admin_ac}"),Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回成就列表', callback_data: "overview_achievement"),Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回大厅', callback_data: "back_overview")]]
+  achi_kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回成就详情', callback_data: "view_achievement_#{m_id[1]}"),Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回成就列表', callback_data: "overview_achievement"),Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回大厅', callback_data: "back_overview")]]
   achi_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: achi_kb)
   begin
-    @update_achievement_title.execute mod_frequency,title,@admin_ac,@frequency
+    @update_achievement_title.execute mod_frequency,title,m_id[1],m_id[2]
     bot.api.send_message chat_id: message.from.id, text: "数量级与称号修改成功"  , reply_markup: achi_kb_makeup
-    @admin_ac = nil
-    @frequency = nil
   rescue
     bot.api.send_message chat_id: message.from.id, text: "哎呀呀呀出错辣，快小窗敲豆腐丝 @tolves，反正敲了也不会修"
     return false
