@@ -6,7 +6,7 @@ require 'openssl'
 require 'open-uri'
 require 'net/https'
 OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
-token = '344686538:AAGWv2ANcHGZhoZDvubC5xMF2l9bOdJnh9k'
+token = 'token'
 
 require_relative  'relatives'
 
