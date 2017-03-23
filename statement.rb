@@ -1,5 +1,11 @@
-@conn = Db.new
-@client = @conn.connect
+begin
+  @conn = Db.new
+  @client = @conn.connect
+rescue
+  puts 'db connect failed'
+  retry
+end
+
 
 @query_agent_exist_statement = @client.prepare("SELECT agent_id,authority FROM users WHERE telegram_id = ?")#{message.from.id}
 

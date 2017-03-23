@@ -9,10 +9,10 @@ def view_achievements message,bot
   achi_kb = Array.new
   achi_kb_array.each_slice(2){|kb| achi_kb<<kb}
   if user_auth['authority']<3
-    achi_kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: '添加新成就', callback_data: "add_achievement"),
-                Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")]
+    achi_kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: '添加新成就', callback_data: 'add_achievement'),
+                Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回大厅', callback_data: 'back_overview')]
   else
-    achi_kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: "返回大厅", callback_data: "back_overview")]
+    achi_kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: '返回大厅', callback_data: 'back_overview')]
   end
   achi_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: achi_kb)
   begin
