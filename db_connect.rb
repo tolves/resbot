@@ -9,7 +9,8 @@ class Db
 		                          :username => mysql_user,
 		                          :password => mysql_passwd,
 		                          :database => mysql_database,
-		                          :encoding => 'utf8')
+		                          :encoding => 'utf8',
+															:reconnect => true)
 	end
 end
 # client = Mysql2::Client.new(:host => "localhost", :username => "root",:password=>"123456",:database=>"salt_res")

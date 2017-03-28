@@ -40,7 +40,7 @@ def resiger message,bot
 
 	agent_exist = @query_agent_exist_statement.execute(message.from.id)
 	if agent_exist == 0
-		bot.api.send_message chat_id: message.chat.id, text: "药丸药丸，快找豆腐丝 @tolves 修bug"
+		bot.api.send_message chat_id: message.chat.id, text: '药丸药丸，快找豆腐丝 @tolves 修bug'
 		return false
 	end
 

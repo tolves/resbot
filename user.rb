@@ -27,6 +27,7 @@ class User
     # end
   end
 
+
   def achievements tele_id
     tmp_pre = @client.prepare("SELECT * FROM profile WHERE telegram_id=?")
     tmp_result = tmp_pre.execute tele_id

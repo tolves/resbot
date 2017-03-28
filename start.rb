@@ -43,15 +43,15 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 									next if notice_all_in_activity message,bot
 								when '请输入要新增的活动职责：'
 									next if create_new_duty message,bot
-								when "请输入要新增数量级与称号\n格式为：数量=>称号\n例如：2=>大魔王\n某些值为boolean的成就，可设置为1=>称号"
+								when '请输入要新增数量级与称号\n格式为：数量=>称号\n例如：2=>大魔王\n某些值为boolean的成就，可设置为1=>称号'
 									next if add_frequency_title message,bot
-								when "请输入要修改的数量级与称号中的数量级："
+								when '请输入要修改的数量级与称号中的数量级：'
 									next if modify_frequency_title message,bot
-								when "请输入要修改的数量级与称号\n格式为：数量=>称号\n例如：2=>大魔王"
+								when '请输入要修改的数量级与称号\n格式为：数量=>称号\n例如：2=>大魔王'
 									next if modify_frequency_and_title message,bot
-								when "请输入新增加的成就描述："
+								when '请输入新增加的成就描述：'
 									next if add_achievement_particular message,bot
-								when "请输入你在本项成就中完成的数值\n某些值为boolean的成就，输入1即可"
+								when '请输入你在本项成就中完成的数值\n某些值为boolean的成就，输入1即可'
 									next if add_myachievement_frequency message,bot
 
 								else

@@ -109,7 +109,7 @@ def add_myachievement_frequency message,bot
     elsif achi_exist.size==0
         insert_myachie.execute message.from.id,m_id[1],frequency
     end
-    bot.api.send_message chat_id: message.from.id, text: "当前成就统计已更新", reply_markup: achi_kb_makeup
+    bot.api.send_message chat_id: message.from.id, text: '当前成就统计已更新', reply_markup: achi_kb_makeup
   rescue
     bot.api.send_message chat_id: message.from.id, text: "哎呀呀呀出错辣，快小窗敲豆腐丝 @tolves，反正敲了也不会修"
     return false
@@ -153,7 +153,7 @@ def add_frequency_title message,bot
   achi_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: achi_kb)
   begin
     @insert_achievement_title.execute m_id[1],frequency,title
-    bot.api.send_message chat_id: message.from.id, text: "新的数量级与称号输入成功", reply_markup: achi_kb_makeup
+    bot.api.send_message chat_id: message.from.id, text: '新的数量级与称号输入成功', reply_markup: achi_kb_makeup
   rescue
     bot.api.send_message chat_id: message.from.id, text: "哎呀呀呀出错辣，快小窗敲豆腐丝 @tolves，反正敲了也不会修"
     return false
@@ -167,7 +167,7 @@ def modify_title message,bot
     bot.api.send_message chat_id:message.from.id , text: '发生错误'
     return false
   end
-  bot.api.send_message chat_id: message.from.id, text: "请输入要修改的数量级与称号中的数量级：", reply_markup:@force_reply
+  bot.api.send_message chat_id: message.from.id, text: '请输入要修改的数量级与称号中的数量级：', reply_markup:@force_reply
 end
 
 
@@ -186,7 +186,7 @@ def modify_frequency_title message,bot
   exist = @query_title_exist.execute m_id[1],frequency
   if exist.size !=1
     bot.api.send_message chat_id:message.from.id , text: '该数量级不存在，请再次输入'
-    bot.api.send_message chat_id: message.from.id, text: "请输入要修改的数量级与称号中的数量级：", reply_markup:@force_reply
+    bot.api.send_message chat_id: message.from.id, text: '请输入要修改的数量级与称号中的数量级：', reply_markup:@force_reply
     return false
   end
   bot.api.send_message chat_id: message.from.id, text: "请输入要修改的数量级与称号\n格式为：数量=>称号\n例如：2=>大魔王", reply_markup:@force_reply
@@ -217,7 +217,7 @@ def modify_frequency_and_title message,bot
   achi_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: achi_kb)
   begin
     @update_achievement_title.execute mod_frequency,title,m_id[1],m_id[2]
-    bot.api.send_message chat_id: message.from.id, text: "数量级与称号修改成功"  , reply_markup: achi_kb_makeup
+    bot.api.send_message chat_id: message.from.id, text: '数量级与称号修改成功'  , reply_markup: achi_kb_makeup
   rescue
     bot.api.send_message chat_id: message.from.id, text: "哎呀呀呀出错辣，快小窗敲豆腐丝 @tolves，反正敲了也不会修"
     return false
@@ -226,7 +226,7 @@ end
 
 
 def add_achievement message,bot
-  bot.api.send_message chat_id: message.from.id, text: "请输入新增加的成就描述：", reply_markup:@force_reply
+  bot.api.send_message chat_id: message.from.id, text: '请输入新增加的成就描述：', reply_markup:@force_reply
 end
 
 
@@ -236,7 +236,7 @@ def add_achievement_particular message,bot
   achi_kb_makeup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: achi_kb)
   begin
     @insert_achievement_particular.execute particular
-    bot.api.send_message chat_id: message.from.id, text: "新增成就成功", reply_markup: achi_kb_makeup
+    bot.api.send_message chat_id: message.from.id, text: '新增成就成功', reply_markup: achi_kb_makeup
   rescue
 
   end
