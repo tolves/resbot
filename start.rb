@@ -132,7 +132,7 @@ Telegram::Bot::Client.run(token, logger: Logger.new($stderr)) do |bot|
 		case e.error_code
       when 403
         puts 'blocked by user'
-        # retry
+        retry
       when 400
 				puts 'connection faild'
 				retry
